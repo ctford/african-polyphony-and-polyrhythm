@@ -11,11 +11,13 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 
 ### Arom's method
 * Identify relevant features
+* Realisation -> model -> realisation p436
+* Western music originally notated pitch only
+* Etic vs emic
 * Create model
 * Recreate original to validate model
 * Recording system
-* Show examples of his notation
-* Western music originally notated pitch only
+* Show examples of his notation e.g. p297 and p305.
 
 ### Tuning systems
 * Tuning and temperament
@@ -25,6 +27,7 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 ### Polyrhythms
 * Different bar lengths and stress
 * Clapping music
+* Hocket is awkward to represent, as Western notation would require separating different parts.
 * Infinite songs
 
 ### Variations
@@ -40,6 +43,13 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 
 ### Performance
 * ???
+
+## Quotes
+* p172 - "to avoid collecting data so full of detail as to make it impossible to distinguish the essential from the extrinsic."
+* p173 - "our conventional signs are still quite capable of accurately representing these durations."
+* p175 - "The material in its modelised form will generally appear at the top of the table; below will be a vertical column showing a number of possible realisations of each part, all of which are interchangeable, provided their position in the periodic structure remains the same."
+* p176 - "If any of them were performed, the members of the community which provided the model for it would immediately identify it."
+
 
 ## References
 * [African Polyphony and Polyrhythm](https://www.amazon.co.uk/African-Polyphony-Polyrhythm-Structure-Methodology/dp/0521616018?tag=duc08-21) by Simha Arom.
