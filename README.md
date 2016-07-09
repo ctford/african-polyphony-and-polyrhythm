@@ -42,5 +42,5 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 * ???
 
 ## References
-[African Polyphony and Polyrhythm](https://www.amazon.co.uk/African-Polyphony-Polyrhythm-Structure-Methodology/dp/0521616018?tag=duc08-21) by Simha Arom.
-[The Topos of Music](https://www.amazon.co.uk/Topos-Music-Geometric-Concepts-Performance/dp/3034894546) by Guerino Mazzola.
+* [African Polyphony and Polyrhythm](https://www.amazon.co.uk/African-Polyphony-Polyrhythm-Structure-Methodology/dp/0521616018?tag=duc08-21) by Simha Arom.
+* [The Topos of Music](https://www.amazon.co.uk/Topos-Music-Geometric-Concepts-Performance/dp/3034894546) by Guerino Mazzola.
