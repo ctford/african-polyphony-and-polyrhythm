@@ -74,4 +74,7 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 
 ## References
 * [African Polyphony and Polyrhythm](https://www.amazon.co.uk/African-Polyphony-Polyrhythm-Structure-Methodology/dp/0521616018?tag=duc08-21) by Simha Arom.
+* [Borg, Omega, and Kubernetes](http://queue.acm.org/detail.cfm?id=2898444) by Brendan Burns, Brian Grant, David Oppenheimer, Eric Brewer, and John Wilkes.
+* [Clojure 1.4's extensible reader](https://www.infoq.com/interviews/hickey-clojure-reader) by Rich Hickey.
+* [Escaping DSL Hell By Having Parenthesis All The Way Down](https://vimeo.com/100425264) by Tom Hall.
 * [The Topos of Music](https://www.amazon.co.uk/Topos-Music-Geometric-Concepts-Performance/dp/3034894546) by Guerino Mazzola.
