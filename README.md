@@ -78,3 +78,4 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 * [Clojure 1.4's extensible reader](https://www.infoq.com/interviews/hickey-clojure-reader) by Rich Hickey.
 * [Escaping DSL Hell By Having Parenthesis All The Way Down](https://vimeo.com/100425264) by Tom Hall.
 * [The Topos of Music](https://www.amazon.co.uk/Topos-Music-Geometric-Concepts-Performance/dp/3034894546) by Guerino Mazzola.
+* [Principles of Design](https://www.w3.org/DesignIssues/Principles.html) by Tim Berners-Lee.
