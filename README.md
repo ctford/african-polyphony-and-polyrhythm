@@ -19,9 +19,16 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 * Recording system
 * Show examples of his notation e.g. p297 and p305.
 
+#### Slides
+* Picture of Arom.
+* Picture of "playback" method along with quote.
+* Schematic of his modeling process.
+* "The proof of the analysis is in the synthesis." - Levi Strauss
+
 ### Tuning systems
 * Tuning and temperament
-* Bartok's flats
+* Bartok's flats p155.
+* Errors in transcription based on bad model. p90
 * Pentatonic equal temperament in Uganda
 
 ### Polyrhythms
@@ -29,6 +36,7 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 * Clapping music
 * Hocket is awkward to represent, as Western notation would require separating different parts.
 * Infinite songs
+* Misunderstanding the patterns p79.
 
 ### Variations
 * Identifying the most basic form of a song
@@ -78,4 +86,3 @@ This talk will argue that music-as-code is an ideal way to represent Arom's insi
 * [Clojure 1.4's extensible reader](https://www.infoq.com/interviews/hickey-clojure-reader) by Rich Hickey.
 * [Escaping DSL Hell By Having Parenthesis All The Way Down](https://vimeo.com/100425264) by Tom Hall.
 * [The Topos of Music](https://www.amazon.co.uk/Topos-Music-Geometric-Concepts-Performance/dp/3034894546) by Guerino Mazzola.
-* [Principles of Design](https://www.w3.org/DesignIssues/Principles.html) by Tim Berners-Lee.
