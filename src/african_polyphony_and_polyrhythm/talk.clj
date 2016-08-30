@@ -26,12 +26,13 @@
 
 (defn split [n fraction notes]
   (let [note (nth notes n)
-        first-duration (-> note :duration (* fraction))
-        second-duration (-> note :duration (* (- 1 fraction)))]
+        first-note (-> note (update-in [:duration] * fraction))
+        second-note (-> note
+                        (update-in [:duration] * (- 1 fraction))
+                        (update-in [:time] + (:duration first-note)))]
     (concat
       (take n notes)
-      [(-> note (assoc :duration first-duration))
-       (-> note (assoc :duration second-duration) (update-in [:time] + first-duration))]
+      [first-note second-note]
       (drop (inc n) notes))))
 
 (comment
