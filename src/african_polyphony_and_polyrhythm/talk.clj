@@ -23,3 +23,20 @@
 
 (defmethod live/play-note :clap2 [_]
   ((sample "samples/select-click.wav")))
+
+(defn split [n fraction notes]
+  (let [note (nth notes n)
+        first-duration (-> note :duration (* fraction))
+        second-duration (-> note :duration (* (- 1 fraction)))]
+    (concat
+      (take n notes)
+      [(-> note (assoc :duration first-duration))
+       (-> note (assoc :duration second-duration) (update-in [:time] + first-duration))]
+      (drop (inc n) notes))))
+
+(comment
+  (->>
+    (rhythm [1/2 1/2 1/3 1/3])
+    (split 1 1/2)
+    )
+  )
