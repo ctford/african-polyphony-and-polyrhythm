@@ -79,20 +79,33 @@
 
 (def tulule
   (part
-    (phrase [2 2] (repeat 2))))
+    (phrase [2 2] (repeat 3))
+    (comp (split 2 1/2) (split 0 1/2))))
 
 (def bongo
   (part
-    (phrase [3/2 3/4 7/4] (cons nil (repeat 2)))))
+    (phrase [3/2 3/4 7/4] (cons nil (repeat 4)))
+    (split 2 5/7)
+    (comp (split 1 1/3) (split 2 5/7))
+    (comp (split 4 1/2) (split 1 1/3) (split 2 5/7))))
+
+(defn up [notes]
+  (->> notes
+       (map (partial where :pitch #(+ % 5)))))
 
 (def balendorc
-  (->> [tete ta ha tulule bongo]
+  (->> [tete ta ha tulule bongo
+        (up tete) (up ta) (up ha) (up tulule) (up bongo)
+        (up (up tete)) (up (up ta)) (up (up ha)) (up (up tulule)) (up (up bongo))
+        (up (up (up tete))) (up (up (up ta))) (up (up (up ha)))]
        (map rand-variations)
        (reduce with)))
 
-(def inverse-pentatonic (comp (partial + 24) pentatonic -))
+(def inverse-pentatonic (comp (partial + 12) pentatonic -))
 
 (comment
+  (fx-reverb)
+  (map fx-distortion [0 1])
   (->>
     balendorc
     (where :pitch (comp temperament/equal A inverse-pentatonic))
