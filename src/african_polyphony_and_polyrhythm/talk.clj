@@ -56,14 +56,12 @@
     (rand-nth variations)
     (lazy-seq (after 4 (rand-variations variations)))))
 
-
 (defn part [model & variations]
-  ((apply juxt variations) model))
+  ((apply juxt (cons identity variations)) model))
 
 (def tete
   (part
     (phrase [2 1/2 3/2] (repeat 0))
-    identity
     (split 0 1/8)
     (comp (split 1 1/7) (split 0 1/8))
     (comp (split 2 1/6) (split 1 1/7) (split 0 1/8))))
@@ -71,29 +69,29 @@
 (def ta
   (part
     (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
-    identity
     (split 2 1/3)
     (split 3 1/2)))
 
 (def ha
   (part
     (phrase [1/2 3 1/2] (cons nil (repeat 2)))
-    identity
     (comp (split 4 1/2) (split 2 1/6) (split 0 1/4))))
 
+(def tulule
+  (part
+    (phrase [2 2] (repeat 2))))
+
+(def bongo
+  (part
+    (phrase [3/2 3/4 7/4] (cons nil (repeat 2)))))
+
 (def balendorc
-  (let [a (phrase [2 1/2 3/2] (repeat 0))
-        b (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
-        c (phrase [1/2 3 1/2] (cons nil (repeat 2)))
-        d (phrase [2 2] (repeat 2))
-        e (phrase [3/2 3/4 7/4] (cons nil (repeat 2)))
-        ]
-    (->> (rand-variations tete)
-         (with (rand-variations ta))
-         (with (rand-variations ha))
-         (take-while #(-> % :time (< 32))))
-    )
-  )
+  (->> (rand-variations tete)
+       (with (rand-variations ta))
+       (with (rand-variations ha))
+       (with (rand-variations tulule))
+       (with (rand-variations bongo))
+       (take-while #(-> % :time (< 32)))))
 
 (def inverse-pentatonic (comp (partial + 24) pentatonic -))
 
