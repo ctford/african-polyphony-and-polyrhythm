@@ -93,7 +93,7 @@
   (->> notes
        (map (partial where :pitch #(+ % 5)))))
 
-(def balendorc
+(def balendoro
   (->> [tete ta ha tulule bongo
         (up tete) (up ta) (up ha) (up tulule) (up bongo)
         (up (up tete)) (up (up ta)) (up (up ha)) (up (up tulule)) (up (up bongo))
@@ -107,7 +107,7 @@
   (fx-reverb)
   (map fx-distortion [0 1])
   (->>
-    balendorc
+    balendoro
     (where :pitch (comp temperament/equal A inverse-pentatonic))
     (tempo (bpm 120))
     (live/play)
