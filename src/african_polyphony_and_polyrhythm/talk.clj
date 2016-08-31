@@ -57,29 +57,29 @@
     (lazy-seq (after 4 (rand-variations variations)))))
 
 
-(defn part [model variations]
+(defn part [model & variations]
   ((apply juxt variations) model))
 
 (def tete
   (part
     (phrase [2 1/2 3/2] (repeat 0))
-    [identity
-     (split 0 1/8)
-     (comp (split 1 1/7) (split 0 1/8))
-     (comp (split 2 1/6) (split 1 1/7) (split 0 1/8))]))
+    identity
+    (split 0 1/8)
+    (comp (split 1 1/7) (split 0 1/8))
+    (comp (split 2 1/6) (split 1 1/7) (split 0 1/8))))
 
 (def ta
   (part
     (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
-    [identity
-     (split 2 1/3)
-     (split 3 1/2)]))
+    identity
+    (split 2 1/3)
+    (split 3 1/2)))
 
 (def ha
   (part
     (phrase [1/2 3 1/2] (cons nil (repeat 2)))
-    [identity
-     (comp (split 4 1/2) (split 2 1/6) (split 0 1/4))]))
+    identity
+    (comp (split 4 1/2) (split 2 1/6) (split 0 1/4))))
 
 (def balendorc
   (let [a (phrase [2 1/2 3/2] (repeat 0))
