@@ -57,7 +57,7 @@
     (lazy-seq (after 4 (rand-variations variations)))))
 
 (defn part [model & variations]
-  ((apply juxt (cons identity variations)) model))
+  ((apply juxt identity variations) model))
 
 (def tete
   (part
@@ -86,12 +86,9 @@
     (phrase [3/2 3/4 7/4] (cons nil (repeat 2)))))
 
 (def balendorc
-  (->> (rand-variations tete)
-       (with (rand-variations ta))
-       (with (rand-variations ha))
-       (with (rand-variations tulule))
-       (with (rand-variations bongo))
-       (take-while #(-> % :time (< 32)))))
+  (->> [tete ta ha tulule bongo]
+       (map rand-variations)
+       (reduce with)))
 
 (def inverse-pentatonic (comp (partial + 24) pentatonic -))
 
