@@ -57,6 +57,36 @@
 (defmethod live/play-note :default [{:keys [pitch]}]
   (when pitch (akadinda pitch)))
 
+(defn rand-variations [variations]
+  (concat
+    (rand-nth variations)
+    (lazy-seq (after 4 (rand-variations variations)))))
+
+
+(defn part [model variations]
+  ((apply juxt variations) model))
+
+(def tete
+  (part
+    (phrase [2 1/2 3/2] (repeat 0))
+    [identity
+     #(->> % (split 0 1/8) (split 1 1/7))
+     #(->> % (split 0 1/8) (split 1 1/7) (split 2 1/6))
+     #(->> % (split 0 1/8))]))
+
+(def ta
+  (part
+    (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
+    [identity
+     #(->> % (split 2 1/3))
+     #(->> % (split 3 1/2))]))
+
+(def ha
+  (part
+    (phrase [1/2 3 1/2] (cons nil (repeat 2)))
+    [identity
+     #(->> % (split 0 1/4) (split 2 1/6) (split 4 1/2))]))
+
 (def balendorc
   (let [a (phrase [2 1/2 3/2] (repeat 0))
         b (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
@@ -64,7 +94,10 @@
         d (phrase [2 2] (repeat 2))
         e (phrase [3/2 3/4 7/4] (cons nil (repeat 2)))
         ]
-    (with a b c d e)
+    (->> (rand-variations tete)
+         (with (rand-variations ta))
+         (with (rand-variations ha))
+         (take-while #(-> % :time (< 32))))
     )
   )
 
@@ -74,7 +107,6 @@
   (->>
     balendorc
     (where :pitch (comp temperament/equal A inverse-pentatonic))
-    (times 8)
     (tempo (bpm 120))
     (live/play)
     )
