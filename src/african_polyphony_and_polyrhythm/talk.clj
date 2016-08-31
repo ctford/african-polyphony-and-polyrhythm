@@ -25,23 +25,17 @@
 (defmethod live/play-note :clap2 [_]
   ((sample "samples/select-click.wav")))
 
-(defn split [n fraction notes]
-  (let [note (nth notes n)
-        first-note (-> note (update-in [:duration] * fraction))
-        second-note (-> note
-                        (update-in [:duration] * (- 1 fraction))
-                        (update-in [:time] + (:duration first-note)))]
-    (concat
-      (take n notes)
-      [first-note second-note]
-      (drop (inc n) notes))))
-
-(comment
-  (->>
-    (rhythm [1/2 1/2 1/3 1/3])
-    (split 1 1/2)
-    )
-  )
+(defn split [n fraction]
+  (fn [notes]
+    (let [note (nth notes n)
+          first-note (-> note (update-in [:duration] * fraction))
+          second-note (-> note
+                          (update-in [:duration] * (- 1 fraction))
+                          (update-in [:time] + (:duration first-note)))]
+      (concat
+        (take n notes)
+        [first-note second-note]
+        (drop (inc n) notes)))))
 
 (definst akadinda [freq 440 vol 0.5]
   (-> (sin-osc freq)
@@ -70,22 +64,22 @@
   (part
     (phrase [2 1/2 3/2] (repeat 0))
     [identity
-     #(->> % (split 0 1/8) (split 1 1/7))
-     #(->> % (split 0 1/8) (split 1 1/7) (split 2 1/6))
-     #(->> % (split 0 1/8))]))
+     (split 0 1/8)
+     (comp (split 1 1/7) (split 0 1/8))
+     (comp (split 2 1/6) (split 1 1/7) (split 0 1/8))]))
 
 (def ta
   (part
     (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
     [identity
-     #(->> % (split 2 1/3))
-     #(->> % (split 3 1/2))]))
+     (split 2 1/3)
+     (split 3 1/2)]))
 
 (def ha
   (part
     (phrase [1/2 3 1/2] (cons nil (repeat 2)))
     [identity
-     #(->> % (split 0 1/4) (split 2 1/6) (split 4 1/2))]))
+     (comp (split 4 1/2) (split 2 1/6) (split 0 1/4))]))
 
 (def balendorc
   (let [a (phrase [2 1/2 3/2] (repeat 0))
