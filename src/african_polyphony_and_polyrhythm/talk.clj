@@ -68,7 +68,7 @@
 (def ta
   (part
     (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
-    (split 2 1/3)
+    (split 9/4 1/4)
     (split 3 1/2)))
 
 (def ha
