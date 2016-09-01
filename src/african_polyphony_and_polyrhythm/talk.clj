@@ -88,15 +88,15 @@
     (comp (split 3/2 1/4) (split 9/4 5/4))
     (comp (split 14/4 1/4) (split 3/2 1/4) (split 9/4 5/4))))
 
-(defn up [notes]
+(defn big [notes]
   (->> notes
        (map (partial where :pitch #(+ % 5)))))
 
 (def balendoro
   (->> [tete ta ha tulule bongo
-        (up tete) (up ta) (up ha) (up tulule) (up bongo)
-        (up (up tete)) (up (up ta)) (up (up ha)) (up (up tulule)) (up (up bongo))
-        (up (up (up tete))) (up (up (up ta))) (up (up (up ha)))]
+        (big tete) (big ta) (big ha) (big tulule) (big bongo)
+        (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
+        (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
        (map rand-variations)
        (reduce with)))
 
