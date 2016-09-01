@@ -25,17 +25,16 @@
 (defmethod live/play-note :clap2 [_]
   ((sample "samples/select-click.wav")))
 
-(defn split [n fraction]
+(defn split [t fraction]
   (fn [notes]
-    (let [note (nth notes n)
-          first-note (-> note (update-in [:duration] * fraction))
+    (let [before? #(-> % :time (< t))
+          before (->> notes (take-while before?))
+          [note & after] (->> notes (drop-while before?))
+          first-note (assoc note :duration fraction)
           second-note (-> note
-                          (update-in [:duration] * (- 1 fraction))
-                          (update-in [:time] + (:duration first-note)))]
-      (concat
-        (take n notes)
-        [first-note second-note]
-        (drop (inc n) notes)))))
+                          (update-in [:duration] - fraction)
+                          (update-in [:time] + fraction))]
+      (concat before [first-note second-note] after))))
 
 (definst akadinda [freq 440 vol 0.5]
   (-> (sin-osc freq)
@@ -62,9 +61,9 @@
 (def tete
   (part
     (phrase [2 1/2 3/2] (repeat 0))
-    (split 0 1/8)
-    (comp (split 1 1/7) (split 0 1/8))
-    (comp (split 2 1/6) (split 1 1/7) (split 0 1/8))))
+    (split 0 1/4)
+    (comp (split 1/4 1/4) (split 0 1/4))
+    (comp (split 2/4 1/4) (split 1/4 1/4) (split 0 1/4))))
 
 (def ta
   (part
@@ -75,7 +74,7 @@
 (def ha
   (part
     (phrase [1/2 3 1/2] (cons nil (repeat 2)))
-    (comp (split 4 1/2) (split 2 1/6) (split 0 1/4))))
+    (comp (split 3/2 1/4) (split 1/2 1/4) (split 0 1/4))))
 
 (def tulule
   (part
@@ -85,9 +84,9 @@
 (def bongo
   (part
     (phrase [3/2 3/4 7/4] (cons nil (repeat 4)))
-    (split 2 5/7)
-    (comp (split 1 1/3) (split 2 5/7))
-    (comp (split 4 1/2) (split 1 1/3) (split 2 5/7))))
+    (split 9/4 5/4)
+    (comp (split 3/2 1/4) (split 9/4 5/4))
+    (comp (split 14/4 1/4) (split 3/2 1/4) (split 9/4 5/4))))
 
 (defn up [notes]
   (->> notes
