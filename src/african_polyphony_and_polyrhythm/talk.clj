@@ -36,7 +36,7 @@
                           (update-in [:time] + fraction))]
       (concat before [first-note second-note] after))))
 
-(definst akadinda [freq 440 vol 0.5]
+(definst akadinda [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
       (+ (* 1/3 (sin-osc (* 2.01 freq))))
       (+ (* 1/2 (sin-osc (* 3.001 freq))))
@@ -45,10 +45,11 @@
       (lpf (* 5 440))
       (* (env-gen (adsr 0.01 0.05 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
       (+ (* (env-gen (perc 0.02 0.03)) (* 1/3 (sin-osc (* 0.5 freq)))))
+      (pan2 pan)
       (* vol)))
 
-(defmethod live/play-note :default [{:keys [pitch]}]
-  (when pitch (akadinda pitch)))
+(defmethod live/play-note :default [{:keys [pitch pan]}]
+  (when pitch (akadinda :freq pitch :pan pan)))
 
 (defn rand-variations [variations]
   (concat
@@ -60,37 +61,49 @@
 
 (def tete
   (part
-    (phrase [2 1/2 3/2] (repeat 0))
+    (phrase [8/4 3/4 5/4] (repeat 0))
     (split 0 1/4)
     (comp (split 1/4 1/4) (split 0 1/4))
     (comp (split 2/4 1/4) (split 1/4 1/4) (split 0 1/4))))
 
 (def ta
   (part
-    (phrase [1 5/4 3/4 1] (cons nil (repeat 1)))
+    (phrase [4/4 5/4 3/4 4/4] (cons nil (repeat 1)))
     (split 9/4 1/4)
-    (split 3 1/2)))
+    (comp (split 10/4 1/4) (split 9/4 1/4))
+    (comp (split 11/4 1/8) (split 10/4 1/4) (split 9/4 1/4))
+    (split 4/4 1/4)))
 
 (def ha
   (part
-    (phrase [1/2 3 1/2] (cons nil (repeat 2)))
-    (comp (split 3/2 1/4) (split 1/2 1/4) (split 0 1/4))))
+    (phrase [2/4 12/4 2/4] (cons nil (repeat 2)))
+    (comp (split 2/4 1/4) (split 0 1/4))
+    (comp (split 6/4 1/4) (split 0 1/4))
+    (comp (split 6/4 1/4))
+    (comp (split 6/4 1/4) (split 2/4 1/4) (split 0 1/4))))
 
 (def tulule
   (part
-    (phrase [2 2] (repeat 3))
-    (comp (split 2 1/2) (split 0 1/2))))
+    (phrase [8/4 8/4] (repeat 3))
+    (comp (split 8/4 2/4) (split 0 2/4)) ; 28
+    (comp (split 1/4 0) (split 2/4 1/4) (split 8/4 2/4) (split 0 2/4)) ; 6
+    (comp (split 3/4 1/8) (split 1/4 0) (split 2/4 1/4) (split 8/4 2/4) (split 0 2/4)))) ; 5
 
 (def bongo
   (part
-    (phrase [3/2 3/4 7/4] (cons nil (repeat 4)))
-    (split 9/4 5/4)
-    (comp (split 3/2 1/4) (split 9/4 5/4))
-    (comp (split 14/4 1/4) (split 3/2 1/4) (split 9/4 5/4))))
+    (phrase [6/4 3/4 7/4] (cons nil (repeat 4))) ; 5
+    (split 9/4 5/4) ; 6
+    (comp (split 6/4 1/4) (split 9/4 5/4)) ; 9
+    (comp (split 14/4 1/4) (split 3/2 1/4) (split 9/4 5/4)))) ; 8
 
 (defn big [notes]
   (->> notes
        (map (partial where :pitch #(+ % 5)))))
+
+(defn pan [{:keys [pitch] :as note}]
+  (if pitch
+    (-> note (assoc :pan (-> pitch (/ 9) dec)))
+    note))
 
 (def balendoro
   (->> [tete ta ha tulule bongo
@@ -98,8 +111,10 @@
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
        (map rand-variations)
+       (map after (range 0 (* 8 18) 8))
        ;(map first)
-       (reduce with)))
+       (reduce with)
+       (map pan)))
 
 (def inverse-pentatonic (comp (partial + 12) pentatonic -))
 
