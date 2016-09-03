@@ -36,20 +36,19 @@
                           (update-in [:time] + fraction))]
       (concat before [first-note second-note] after))))
 
-(definst akadinda [freq 440 vol 0.5 pan 0]
+(definst horn [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
-      (+ (* 1/3 (sin-osc (* 2.01 freq))))
-      (+ (* 1/2 (sin-osc (* 3.001 freq))))
-      (+ (* 1/8 (sin-osc (* 5.001 freq))))
+      (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
+      (+ (* 1/5 (sin-osc 3) (sin-osc (* 2 freq))))
+      (+ (* 1/8 (sin-osc 9) (sin-osc (* 4.99 freq))))
+      (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
-      (lpf (* 5 440))
-      (* (env-gen (adsr 0.01 0.05 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
-      (+ (* (env-gen (perc 0.02 0.03)) (* 1/3 (sin-osc (* 0.5 freq)))))
+      (* (env-gen (adsr 0.1 0.3 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
       (pan2 pan)
       (* vol)))
 
 (defmethod live/play-note :default [{:keys [pitch pan]}]
-  (when pitch (akadinda :freq pitch :pan pan)))
+  (when pitch (horn :freq pitch :pan pan)))
 
 (defn rand-variations [variations]
   (concat
