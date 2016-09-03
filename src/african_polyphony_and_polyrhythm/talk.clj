@@ -55,7 +55,7 @@
       (+ (* 1/8 (sin-osc 9) (sin-osc (* 4.99 freq))))
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
-      (rlpf (line:kr freq (* 7 freq) 0.4) 1/3)
+      (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
       (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
       (pan2 pan)
       (* vol)))
@@ -83,9 +83,10 @@
   (let [model (->> (phrase [5/4 3/4 4/4] (repeat 1)) (after 4/4))
         a (split 9/4 1/4)
         b (comp (split 10/4 1/4) a)
-        c (comp (split 11/4 1/8) b)
-        d (split 4/4 1/4)]
-    (part model a b c d)))
+        c (comp (accent 11/4) (split 11/4 1/8) b) ; 17
+        d (split 4/4 1/4)
+        e (comp (omit 10/4) c)] ; 8
+    (part model a b c d e)))
 
 (def ha
   (let [model (->> (phrase [12/4 2/4] (repeat 2)) (after 2/4))
