@@ -80,12 +80,12 @@
     (part model a b c d)))
 
 (def ta
-  (part
-    (phrase [4/4 5/4 3/4 4/4] (cons nil (repeat 1)))
-    (split 9/4 1/4)
-    (comp (split 10/4 1/4) (split 9/4 1/4))
-    (comp (split 11/4 1/8) (split 10/4 1/4) (split 9/4 1/4))
-    (split 4/4 1/4)))
+  (let [model (->> (phrase [5/4 3/4 4/4] (repeat 1)) (after 4/4))
+        a (split 9/4 1/4)
+        b (comp (split 10/4 1/4) a)
+        c (comp (split 11/4 1/8) b)
+        d (split 4/4 1/4)]
+    (part model a b c d)))
 
 (def ha
   (part
