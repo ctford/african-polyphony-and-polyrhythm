@@ -72,11 +72,12 @@
   ((apply juxt identity variations) model))
 
 (def tete
-  (part
-    (phrase [8/4 3/4 5/4] (repeat 0))
-    (split 0 1/4)
-    (comp (split 1/4 1/4) (split 0 1/4))
-    (comp (accent 2/4) (split 2/4 1/4) (split 1/4 1/4) (split 0 1/4))))
+  (let [model (phrase [8/4 3/4 5/4] (repeat 0))
+        a (split 0 1/4)
+        b (comp (split 1/4 1/4) a)
+        c (comp (accent 2/4) (split 2/4 1/4) b)
+        d (comp (omit 0/4) c)]
+    (part model a b c d)))
 
 (def ta
   (part
@@ -122,7 +123,6 @@
         (big tete) (big ta) (big ha) (big tulule) (big bongo)
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
-       (take 1)
        (map rand-variations)
        (map after (range 0 (* 8 18) 8))
        ;(map first)
