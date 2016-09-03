@@ -141,7 +141,7 @@
   (map fx-distortion [0 1])
   (->>
     balendoro
-    (where :pitch (comp temperament/equal A inverse-pentatonic))
+    (where :pitch (comp (temperament/just 66) A inverse-pentatonic))
     (tempo (bpm 120))
     (live/play)
     )
