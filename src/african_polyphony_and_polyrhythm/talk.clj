@@ -25,16 +25,21 @@
 (defmethod live/play-note :clap2 [_]
   ((sample "samples/select-click.wav")))
 
-(defn split [t fraction]
+(defn vary [t f]
   (fn [notes]
     (let [before? #(-> % :time (< t))
           before (->> notes (take-while before?))
-          [note & after] (->> notes (drop-while before?))
-          first-note (assoc note :duration fraction)
-          second-note (-> note
-                          (update-in [:duration] - fraction)
-                          (update-in [:time] + fraction))]
-      (concat before [first-note second-note] after))))
+          [note & after] (->> notes (drop-while before?))]
+      (concat before (f note) after))))
+
+(defn split [t fraction]
+  (letfn [ (f [note]
+             [(-> note
+                  (assoc :duration fraction))
+              (-> note
+                  (update-in [:duration] - fraction)
+                  (update-in [:time] + fraction))])]
+    (vary t f)))
 
 (definst horn [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
@@ -43,7 +48,8 @@
       (+ (* 1/8 (sin-osc 9) (sin-osc (* 4.99 freq))))
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
-      (* (env-gen (adsr 0.1 0.3 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
+      (rlpf (line:kr freq (* 7 freq) 0.4) 1/3)
+      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
       (pan2 pan)
       (* vol)))
 
@@ -115,7 +121,7 @@
        (reduce with)
        (map pan)))
 
-(def inverse-pentatonic (comp (partial + 12) pentatonic -))
+(def inverse-pentatonic (comp pentatonic -))
 
 (comment
   (fx-reverb)
