@@ -121,15 +121,17 @@
     note))
 
 (def balendoro
-  (->> [tete ta ha tulule bongo
-        (big tete) (big ta) (big ha) (big tulule) (big bongo)
-        (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
-        (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
-       (map rand-variations)
-       (map after (range 0 (* 8 18) 8))
-       ;(map first)
-       (reduce with)
-       (map pan)))
+  (let [horns [tete ta ha tulule bongo]]
+    (->> (concat
+           horns
+           (map big horns)
+           (map (comp big big) horns)
+           (map (comp big big big) (take 3 horns)))
+         (map rand-variations)
+         (map after (range 0 (* 8 18) 8))
+         ;(map first)
+         (reduce with)
+         (map pan))))
 
 (def inverse-pentatonic (comp pentatonic -))
 
