@@ -98,6 +98,7 @@
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
        (map rand-variations)
+       ;(map first)
        (reduce with)))
 
 (def inverse-pentatonic (comp (partial + 12) pentatonic -))
