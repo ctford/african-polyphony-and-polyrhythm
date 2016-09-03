@@ -2,7 +2,7 @@
   (:require [overtone.live :refer :all :exclude [stop]]
             [leipzig.melody :refer :all]
             [leipzig.canon :refer [canon]]
-            [leipzig.scale :refer [A B major minor pentatonic]]
+            [leipzig.scale :refer [A B major minor pentatonic high]]
             [leipzig.temperament :as temperament]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
@@ -88,26 +88,27 @@
     (part model a b c d)))
 
 (def ha
-  (part
-    (phrase [2/4 12/4 2/4] (cons nil (repeat 2)))
-    (comp (split 2/4 1/4) (split 0 1/4))
-    (comp (split 6/4 1/4) (split 0 1/4))
-    (comp (split 6/4 1/4))
-    (comp (split 6/4 1/4) (split 2/4 1/4) (split 0 1/4))))
+  (let [model (->> (phrase [12/4 2/4] (repeat 2)) (after 2/4))
+        a (comp (split 2/4 1/4) (split 0 1/4))
+        b (comp (split 6/4 1/4))
+        c (comp (split 0 1/4) b)
+        d (comp a b)]
+    (part model a b c d)))
 
 (def tulule
-  (part
-    (phrase [8/4 8/4] (repeat 3))
-    (comp (split 8/4 2/4) (split 0 2/4)) ; 28
-    (comp (split 1/4 0) (split 2/4 1/4) (split 8/4 2/4) (split 0 2/4)) ; 6
-    (comp (split 3/4 1/8) (split 1/4 0) (split 2/4 1/4) (split 8/4 2/4) (split 0 2/4)))) ; 5
+  (let [model (phrase [8/4 8/4] (repeat 3))
+        a (comp (split 8/4 2/4) (split 0 2/4)) ; 28
+        b (comp (split 0 1/4) (split 2/4 1/4) a) ; 6
+        c (comp (accent 7/8) (split 3/4 1/8) b)] ; 5
+    (part model a b c)))
 
 (def bongo
-  (part
-    (phrase [6/4 3/4 7/4] (cons nil (repeat 4))) ; 5
-    (split 9/4 5/4) ; 6
-    (comp (split 6/4 1/4) (split 9/4 5/4)) ; 9
-    (comp (split 14/4 1/4) (split 3/2 1/4) (split 9/4 5/4)))) ; 8
+  (let [model (->> (phrase [3/4 7/4] (repeat 4)) (after 6/4)) ; 5
+        a (split 9/4 5/4) ; 6
+        b (comp (split 6/4 1/4) a) ; 9
+        c (comp (split 14/4 1/4) b) ; 8
+        d (comp (accent 10/4) (split 9/4 1/4) b)] ; 19
+    (part model a b c d)))
 
 (defn big [notes]
   (->> notes
@@ -133,10 +134,11 @@
 
 (comment
   (fx-reverb)
+  (map fx-chorus [0 1])
   (map fx-distortion [0 1])
   (->>
     balendoro
-    (where :pitch (comp temperament/equal A inverse-pentatonic))
+    (where :pitch (comp temperament/equal high A inverse-pentatonic))
     (tempo (bpm 120))
     (live/play)
     )
