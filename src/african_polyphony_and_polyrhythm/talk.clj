@@ -33,13 +33,20 @@
       (concat before (f note) after))))
 
 (defn split [t fraction]
-  (letfn [ (f [note]
-             [(-> note
-                  (assoc :duration fraction))
-              (-> note
-                  (update-in [:duration] - fraction)
-                  (update-in [:time] + fraction))])]
+  (letfn [(f [note]
+            [(-> note
+                 (assoc :duration fraction))
+             (-> note
+                 (update-in [:duration] - fraction)
+                 (update-in [:time] + fraction))])]
     (vary t f)))
+
+(defn accent [t]
+  (letfn [(f [note] [(-> note (update-in [:pitch] dec))])]
+    (vary t f)))
+
+(defn omit [t]
+  (vary t (constantly [])))
 
 (definst horn [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
@@ -69,7 +76,7 @@
     (phrase [8/4 3/4 5/4] (repeat 0))
     (split 0 1/4)
     (comp (split 1/4 1/4) (split 0 1/4))
-    (comp (split 2/4 1/4) (split 1/4 1/4) (split 0 1/4))))
+    (comp (accent 2/4) (split 2/4 1/4) (split 1/4 1/4) (split 0 1/4))))
 
 (def ta
   (part
@@ -115,6 +122,7 @@
         (big tete) (big ta) (big ha) (big tulule) (big bongo)
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
+       (take 1)
        (map rand-variations)
        (map after (range 0 (* 8 18) 8))
        ;(map first)
