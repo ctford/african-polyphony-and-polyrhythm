@@ -133,7 +133,7 @@
          (reduce with)
          (map pan))))
 
-(def inverse-pentatonic (comp pentatonic -))
+(def inverse-pentatonic (comp high pentatonic -))
 
 (comment
   (fx-reverb)
@@ -141,7 +141,7 @@
   (map fx-distortion [0 1])
   (->>
     balendoro
-    (where :pitch (comp temperament/equal high A inverse-pentatonic))
+    (where :pitch (comp temperament/equal A inverse-pentatonic))
     (tempo (bpm 120))
     (live/play)
     )
