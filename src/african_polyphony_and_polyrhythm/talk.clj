@@ -39,13 +39,13 @@
 (defn clapping-music []
   (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
     (->> african-bell-pattern forever (all :part :clap1)
-         (canon #(->> % (take 64) (then (rhythm [1/8])) forever (all :part :clap2))))))
+         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :clap2))))))
 
 (comment
   (->> (clapping-music)
        live/play))
 
-(definst clap [freq 440 vol 0.5 pan 0]
+(definst drum [freq 440 vol 0.5 pan 0]
   (-> (* 2/3 (brown-noise))
       (+ (* 1/2 (sin-osc (* 3 freq))))
       (+ (* 1/5 (sin-osc (* 5 freq))))
@@ -56,13 +56,13 @@
       (* vol)))
 
 (defmethod live/play-note :clap1 [_]
-  (clap 225 :pan 0.75))
+  (drum 225 :pan 0.75))
 
 (defmethod live/play-note :clap2 [_]
-  (clap 150 :pan -0.75))
+  (drum 150 :pan -0.75))
 
 (defmethod live/play-note :clap3 [_]
-  (clap 75 :pan 0))
+  (drum 75 :pan 0))
 
 (defn vary [t f]
   (fn [notes]
@@ -179,16 +179,11 @@
          (map pan))))
 
 (comment
-  (fx-reverb)
-  (map fx-chorus [0 1])
-  (map fx-distortion [0 1])
   (->>
     balendoro
     (where :pitch (comp temperament/equal A car))
     (tempo (bpm 120))
-    (live/play)
-    )
-  )
+    (live/play)))
 
 (def first-drum
   (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
