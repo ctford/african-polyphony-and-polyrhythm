@@ -7,28 +7,37 @@
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
 
-(defn vary [t f]
+(defn vary
+  "Apply f to the note at time t."
+  [t f]
   (fn [notes]
-    (let [before? #(-> % :time (< t))
+    (let [before? (fn [note] (-> note :time (< t)))
           before (->> notes (take-while before?))
           [note & after] (->> notes (drop-while before?))]
-      (concat before (f note) after))))
+      (with before (f note) after))))
 
-(defn split [t fraction]
+(defn split
+  "Split a new note off the note at time t."
+  [t duration]
   (letfn [(f [note]
-            [(-> note (assoc :duration fraction))
-             (-> note (update-in [:duration] - fraction)
-                 (update-in [:time] + fraction))])]
+            [(-> note (assoc :duration duration))
+             (-> note (update :duration - duration) (update :time + duration))])]
     (vary t f)))
 
-(defn accent [t]
-  (letfn [(f [note] [(-> note (update-in [:pitch] dec))])]
+(defn accent
+  "Accent the pitch of the note at time t."
+  [t]
+  (letfn [(f [note] [(-> note (update :pitch dec))])]
     (vary t f)))
 
-(defn omit [t]
+(defn skip
+  "Skip the note at time t."
+  [t]
   (vary t (constantly [])))
 
-(defn rand-variations [variations]
+(defn rand-variations
+  "Assemble an infinite random concatenation of variations."
+  [variations]
   (let [variation (rand-nth variations)]
     (concat
       variation
@@ -36,29 +45,31 @@
         (->> (rand-variations variations)
              (after (duration variation) ))))))
 
-(defn part [model & variations]
+(defn part
+  "Generate version of the model using the variations fns."
+  [model & variations]
   ((apply juxt identity variations) model))
 
 (def first-drum
   (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
         a (split 6/5 1/10)
         b (split 5/5 1/10)
-        c (comp (split 17/15 2/15) (split 5/5 2/15) (omit 6/5))
-        d (comp (omit 7/5) (omit 6/5))]
+        c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
+        d (comp (skip 7/5) (skip 6/5))]
     (part model a b c d)))
 
 (def second-drum
   (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
-        a (omit 9/5)
-        b (omit 0)
+        a (skip 9/5)
+        b (skip 0)
         c (comp a b)
         d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :clap2)))]
     (part model a b c d)))
 
 (def third-drum
   (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
-        a (omit 2/5)
-        b (omit 3/5)
+        a (skip 2/5)
+        b (skip 3/5)
         c (comp (split 0 1/5) a)
         d (split 3/5 1/5)
         e (comp (split 3/5 1/10) d)
@@ -124,7 +135,7 @@
         a (split 0 1/4)
         b (comp (split 1/4 1/4) a)
         c (comp (accent 2/4) (split 2/4 1/4) b)
-        d (comp (omit 0/4) c)]
+        d (comp (skip 0/4) c)]
     (part model a b c d)))
 
 (def ta
@@ -133,7 +144,7 @@
         b (comp (split 10/4 1/4) a)
         c (comp (accent 11/4) (split 11/4 1/8) b) ; 17
         d (split 4/4 1/4)
-        e (comp (omit 10/4) c)] ; 8
+        e (comp (skip 10/4) c)] ; 8
     (part model a b c d e)))
 
 (def ha
