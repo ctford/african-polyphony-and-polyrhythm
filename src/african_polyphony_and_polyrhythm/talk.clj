@@ -77,12 +77,16 @@
         g (comp (split 0 1/10) f)]
     (part model a b c d e f g)))
 
+(defn introduce-after [t parts]
+  (->> parts
+       (map after (range 0 (* (count parts) t) t))))
+
 (def aga-terumo ; p299
   (let [drums [first-drum second-drum third-drum]]
     (->> drums
          ;(map (comp list first))
          (map rand-variations)
-         (map after (range 0 (* 4 3) 4))
+         (introduce-after 4)
          (reduce with))))
 
 (comment
@@ -189,7 +193,7 @@
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
        ;(map (comp list first))
        (map rand-variations)
-       (map after (range 0 (* 4 18) 4))
+       (introduce-after 4)
        (reduce with)
        (map pan)))
 
