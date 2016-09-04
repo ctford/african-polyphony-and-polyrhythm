@@ -90,8 +90,8 @@
 (definst horn [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
       (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
-      (+ (* 1/5 (sin-osc 3) (sin-osc (* 2 freq))))
-      (+ (* 1/8 (sin-osc 9) (sin-osc (* 4.99 freq))))
+      (+ (* 1/5 (sin-osc (* 2 freq))))
+      (+ (* 1/8 (sin-osc (* 4.99 freq))))
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
       (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
