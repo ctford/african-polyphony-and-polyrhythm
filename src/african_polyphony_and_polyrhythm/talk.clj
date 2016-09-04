@@ -103,14 +103,12 @@
   (when pitch (horn :freq pitch :pan (or 0 pan))))
 
 (defn rand-variations [variations]
-  (concat
-    (rand-nth variations)
-    (lazy-seq (after 4 (rand-variations variations)))))
-
-(defn rand-variations2 [variations]
-  (concat
-    (rand-nth variations)
-    (lazy-seq (after 2 (rand-variations2 variations)))))
+  (let [variation (rand-nth variations)]
+    (concat
+      variation
+      (lazy-seq
+        (->> (rand-variations variations)
+             (after (duration variation) ))))))
 
 (defn part [model & variations]
   ((apply juxt identity variations) model))
@@ -213,13 +211,12 @@
         e (comp (split 3/5 1/10) d)
         f (split 0 1/5)
         g (comp (split 0 1/10) f)]
-    (->> (part model a b c d e f g)
-         (map (partial times 2)))))
+    (part model a b c d e f g)))
 
 (def aga-terumo ; p299
   (let [drums [first-drum second-drum third-drum]]
     (->> drums
-         (map rand-variations2)
+         (map rand-variations)
          ;(map first)
          (reduce with))))
 
