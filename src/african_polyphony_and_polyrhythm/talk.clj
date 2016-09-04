@@ -7,6 +7,92 @@
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
 
+(defn vary [t f]
+  (fn [notes]
+    (let [before? #(-> % :time (< t))
+          before (->> notes (take-while before?))
+          [note & after] (->> notes (drop-while before?))]
+      (concat before (f note) after))))
+
+(defn split [t fraction]
+  (letfn [(f [note]
+            [(-> note (assoc :duration fraction))
+             (-> note (update-in [:duration] - fraction)
+                 (update-in [:time] + fraction))])]
+    (vary t f)))
+
+(defn accent [t]
+  (letfn [(f [note] [(-> note (update-in [:pitch] dec))])]
+    (vary t f)))
+
+(defn omit [t]
+  (vary t (constantly [])))
+
+(defn rand-variations [variations]
+  (let [variation (rand-nth variations)]
+    (concat
+      variation
+      (lazy-seq
+        (->> (rand-variations variations)
+             (after (duration variation) ))))))
+
+(defn part [model & variations]
+  ((apply juxt identity variations) model))
+
+(def first-drum
+  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
+        a (split 6/5 1/10)
+        b (split 5/5 1/10)
+        c (comp (split 17/15 2/15) (split 5/5 2/15) (omit 6/5))
+        d (comp (omit 7/5) (omit 6/5))]
+    (part model a b c d)))
+
+(def second-drum
+  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
+        a (omit 9/5)
+        b (omit 0)
+        c (comp a b)
+        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :clap2)))]
+    (part model a b c d)))
+
+(def third-drum
+  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
+        a (omit 2/5)
+        b (omit 3/5)
+        c (comp (split 0 1/5) a)
+        d (split 3/5 1/5)
+        e (comp (split 3/5 1/10) d)
+        f (split 0 1/5)
+        g (comp (split 0 1/10) f)]
+    (part model a b c d e f g)))
+
+(def aga-terumo ; p299
+  (let [drums [first-drum second-drum third-drum]]
+    (->> drums
+         ;(map (comp list first))
+         (map rand-variations)
+         (map after (range 0 (* 4 3) 4))
+         (reduce with))))
+
+(comment
+  (->>
+    aga-terumo
+    (tempo (bpm 90))
+    (live/play)))
+
+; Clapping music
+(defn forever [riff]
+  (concat riff (lazy-seq (->> riff forever (after (duration riff))))))
+
+(defn clapping-music []
+  (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
+    (->> african-bell-pattern forever (all :part :clap1)
+         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :clap2))))))
+
+(comment
+  (->> (clapping-music)
+       live/play))
+
 ; Natural numbers
 (comment
   (range 0 8))
@@ -32,52 +118,6 @@
   (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp temperament/equal A major))
        live/play))
-
-(defn forever [riff]
-  (concat riff (lazy-seq (->> riff forever (after (duration riff))))))
-
-(defn clapping-music []
-  (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
-    (->> african-bell-pattern forever (all :part :clap1)
-         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :clap2))))))
-
-(comment
-  (->> (clapping-music)
-       live/play))
-
-(defn vary [t f]
-  (fn [notes]
-    (let [before? #(-> % :time (< t))
-          before (->> notes (take-while before?))
-          [note & after] (->> notes (drop-while before?))]
-      (concat before (f note) after))))
-
-(defn split [t fraction]
-  (letfn [(f [note]
-            [(-> note
-                 (assoc :duration fraction))
-             (-> note
-                 (update-in [:duration] - fraction)
-                 (update-in [:time] + fraction))])]
-    (vary t f)))
-
-(defn accent [t]
-  (letfn [(f [note] [(-> note (update-in [:pitch] dec))])]
-    (vary t f)))
-
-(defn omit [t]
-  (vary t (constantly [])))
-
-(defn rand-variations [variations]
-  (let [variation (rand-nth variations)]
-    (concat
-      variation
-      (lazy-seq
-        (->> (rand-variations variations)
-             (after (duration variation) ))))))
-
-(defn part [model & variations]
-  ((apply juxt identity variations) model))
 
 (def tete
   (let [model (phrase [8/4 3/4 5/4] (repeat 0))
@@ -147,47 +187,6 @@
     ndereje-balendoro
     (where :pitch (comp temperament/equal A car))
     (tempo (bpm 120))
-    (live/play)))
-
-(def first-drum
-  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
-        a (split 6/5 1/10)
-        b (split 5/5 1/10)
-        c (comp (split 17/15 2/15) (split 5/5 2/15) (omit 6/5))
-        d (comp (omit 7/5) (omit 6/5))]
-    (part model a b c d)))
-
-(def second-drum
-  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
-        a (omit 9/5)
-        b (omit 0)
-        c (comp a b)
-        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :clap2)))]
-    (part model a b c d)))
-
-(def third-drum
-  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
-        a (omit 2/5)
-        b (omit 3/5)
-        c (comp (split 0 1/5) a)
-        d (split 3/5 1/5)
-        e (comp (split 3/5 1/10) d)
-        f (split 0 1/5)
-        g (comp (split 0 1/10) f)]
-    (part model a b c d e f g)))
-
-(def aga-terumo ; p299
-  (let [drums [first-drum second-drum third-drum]]
-    (->> drums
-         ;(map (comp list first))
-         (map rand-variations)
-         (map after (range 0 (* 4 3) 4))
-         (reduce with))))
-
-(comment
-  (->>
-    aga-terumo
-    (tempo (bpm 90))
     (live/play)))
 
 ; Instruments
