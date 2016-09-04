@@ -165,22 +165,20 @@
         (assoc note :pan p)))
     note))
 
-(def balendoro ; p 343
-  (let [horns [tete ta ha tulule bongo]]
-    (->> (concat
-           horns
-           (map big horns)
-           (map (comp big big) horns)
-           (map (comp big big big) (take 3 horns)))
-         ;(map (comp list first))
-         (map rand-variations)
-         (map after (range 0 (* 4 18) 4))
-         (reduce with)
-         (map pan))))
+(def ndereje-balendoro ; p 343
+  (->> [tete ta ha tulule bongo
+        (big tete) (big ta) (big ha) (big tulule) (big bongo)
+        (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
+        (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
+       ;(map (comp list first))
+       (map rand-variations)
+       (map after (range 0 (* 4 18) 4))
+       (reduce with)
+       (map pan)))
 
 (comment
   (->>
-    balendoro
+    ndereje-balendoro
     (where :pitch (comp temperament/equal A car))
     (tempo (bpm 120))
     (live/play)))
