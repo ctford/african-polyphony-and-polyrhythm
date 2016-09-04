@@ -45,25 +45,6 @@
   (->> (clapping-music)
        live/play))
 
-(definst drum [freq 440 vol 0.5 pan 0]
-  (-> (* 2/3 (brown-noise))
-      (+ (* 1/2 (sin-osc (* 3 freq))))
-      (+ (* 1/5 (sin-osc (* 5 freq))))
-      (clip2 0.8)
-      (rlpf (line:kr freq (* 7 freq) 0.02))
-      (* (env-gen (adsr 0.02 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
-      (pan2 pan)
-      (* vol)))
-
-(defmethod live/play-note :clap1 [_]
-  (drum 225 :pan 0.75))
-
-(defmethod live/play-note :clap2 [_]
-  (drum 150 :pan -0.75))
-
-(defmethod live/play-note :clap3 [_]
-  (drum 75 :pan 0))
-
 (defn vary [t f]
   (fn [notes]
     (let [before? #(-> % :time (< t))
@@ -86,21 +67,6 @@
 
 (defn omit [t]
   (vary t (constantly [])))
-
-(definst horn [freq 440 vol 0.5 pan 0]
-  (-> (sin-osc freq)
-      (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
-      (+ (* 1/5 (sin-osc (* 2 freq))))
-      (+ (* 1/8 (sin-osc (* 4.99 freq))))
-      (+ (* 1/8 (sin-osc (* 7.01 freq))))
-      (clip2 0.8)
-      (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
-      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
-      (pan2 pan)
-      (* vol)))
-
-(defmethod live/play-note :default [{:keys [pitch pan]}]
-  (when pitch (horn :freq pitch :pan (or pan 0))))
 
 (defn rand-variations [variations]
   (let [variation (rand-nth variations)]
@@ -223,3 +189,38 @@
     aga-terumo
     (tempo (bpm 90))
     (live/play)))
+
+; Instruments
+(definst drum [freq 440 vol 0.5 pan 0]
+  (-> (* 2/3 (brown-noise))
+      (+ (* 1/2 (sin-osc (* 3 freq))))
+      (+ (* 1/5 (sin-osc (* 5 freq))))
+      (clip2 0.8)
+      (rlpf (line:kr freq (* 7 freq) 0.02))
+      (* (env-gen (adsr 0.02 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
+      (pan2 pan)
+      (* vol)))
+
+(defmethod live/play-note :clap1 [_]
+  (drum 225 :pan 0.75))
+
+(defmethod live/play-note :clap2 [_]
+  (drum 150 :pan -0.75))
+
+(defmethod live/play-note :clap3 [_]
+  (drum 75 :pan 0))
+
+(definst horn [freq 440 vol 0.5 pan 0]
+  (-> (sin-osc freq)
+      (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
+      (+ (* 1/5 (sin-osc (* 2 freq))))
+      (+ (* 1/8 (sin-osc (* 4.99 freq))))
+      (+ (* 1/8 (sin-osc (* 7.01 freq))))
+      (clip2 0.8)
+      (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
+      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
+      (pan2 pan)
+      (* vol)))
+
+(defmethod live/play-note :default [{:keys [pitch pan]}]
+  (when pitch (horn :freq pitch :pan (or pan 0))))
