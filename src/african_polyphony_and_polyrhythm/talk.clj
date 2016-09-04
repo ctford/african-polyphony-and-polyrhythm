@@ -2,10 +2,16 @@
   (:require [overtone.live :refer :all :exclude [stop scale]]
             [leipzig.melody :refer :all]
             [leipzig.canon :refer [canon]]
-            [leipzig.scale :refer [scale A B high low]]
+            [leipzig.scale :refer [scale A B high low from]]
             [leipzig.temperament :as temperament]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Ostinato with variations ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn vary
   "Apply f to the note at time t."
@@ -49,6 +55,12 @@
   "Generate version of the model using the variations fns."
   [model & variations]
   ((apply juxt identity variations) model))
+
+
+
+;;;;;;;;;;;;;;
+; Aga Terumo ;
+;;;;;;;;;;;;;;
 
 (def child
   (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :child))
@@ -94,7 +106,12 @@
     (tempo (bpm 90))
     live/play))
 
-; Clapping music
+
+
+;;;;;;;;;;;;;;;;;;
+; Clapping Music ;
+;;;;;;;;;;;;;;;;;;
+
 (defn clapping-music []
   (let [forever (comp rand-variations list)
         african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
@@ -104,6 +121,12 @@
 (comment
   (->> (clapping-music)
        live/play))
+
+
+
+;;;;;;;;;;;;;;;;;;
+; Natural scales ;
+;;;;;;;;;;;;;;;;;;
 
 ; Natural numbers
 (comment
@@ -130,6 +153,12 @@
   (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp temperament/equal A major))
        live/play))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;
+; Ndereje Balendoro ; p 343
+;;;;;;;;;;;;;;;;;;;;;
 
 (def tete
   (let [model (phrase [8/4 3/4 5/4] (repeat 0))
@@ -172,16 +201,13 @@
     (part model a b c d)))
 
 (defn big [notes]
-  (->> notes
-       (map (partial where :pitch #(+ % 5)))))
+  (->> notes (map #(where :pitch (from 5) %))))
 
 (defn pan [{:keys [pitch] :as note}]
-  (if pitch
-    (let [p (-> note :pitch (/ 18) dec)]
-      (if (odd? pitch)
-        (assoc note :pan (- p))
-        (assoc note :pan p)))
-    note))
+  (let [p (cond (not pitch) 0
+                (odd? pitch) (-> pitch (/ 18) dec -)
+                (even? pitch) (-> pitch (/ 18) dec))]
+    (assoc note :pan p)))
 
 (def ndereje-balendoro ; p 343
   (->> [tete ta ha tulule bongo
@@ -199,7 +225,12 @@
     (tempo (bpm 120))
     (live/play)))
 
-; Instruments
+
+
+;;;;;;;;;;;;;;;
+; Instruments ;
+;;;;;;;;;;;;;;;
+
 (definst drum [freq 440 vol 0.5 pan 0]
   (-> (* 2/3 (brown-noise))
       (+ (* 1/2 (sin-osc (* 3 freq))))
