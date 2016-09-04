@@ -56,10 +56,13 @@
       (* vol)))
 
 (defmethod live/play-note :clap1 [_]
-  (clap 225 :pan 1))
+  (clap 225 :pan 0.75))
 
 (defmethod live/play-note :clap2 [_]
-  (clap 150 :pan -1))
+  (clap 150 :pan -0.75))
+
+(defmethod live/play-note :clap3 [_]
+  (clap 75 :pan 0))
 
 (defn vary [t f]
   (fn [notes]
@@ -103,6 +106,11 @@
   (concat
     (rand-nth variations)
     (lazy-seq (after 4 (rand-variations variations)))))
+
+(defn rand-variations2 [variations]
+  (concat
+    (rand-nth variations)
+    (lazy-seq (after 2 (rand-variations2 variations)))))
 
 (defn part [model & variations]
   ((apply juxt identity variations) model))
@@ -156,7 +164,7 @@
     (-> note (assoc :pan (-> pitch (/ 9) dec)))
     note))
 
-(def balendoro
+(def balendoro ; p 343
   (let [horns [tete ta ha tulule bongo]]
     (->> (concat
            horns
@@ -180,3 +188,43 @@
     (live/play)
     )
   )
+
+(def first-drum
+  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
+        a (split 6/5 1/10)
+        b (split 5/5 1/10)
+        c (comp (split 17/15 2/15) (split 5/5 2/15) (omit 6/5))
+        d (comp (omit 7/5) (omit 6/5))]
+    (part model a b c d)))
+
+(def second-drum
+  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
+        a (omit 9/5)
+        b (omit 0)
+        c (comp a b)]
+    (part model a b c)))
+
+(def third-drum
+  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
+        a (omit 2/5)
+        b (omit 3/5)
+        c (comp (split 0 1/5) a)
+        d (split 3/5 1/5)
+        e (comp (split 3/5 1/10) d)
+        f (split 0 1/5)
+        g (comp (split 0 1/10) f)]
+    (->> (part model a b c d e f g)
+         (map (partial times 2)))))
+
+(def aga-terumo ; p299
+  (let [drums [first-drum second-drum third-drum]]
+    (->> drums
+         (map rand-variations2)
+         ;(map first)
+         (reduce with))))
+
+(comment
+  (->>
+    aga-terumo
+    (tempo (bpm 90))
+    (live/play)))
