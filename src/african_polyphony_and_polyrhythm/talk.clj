@@ -100,7 +100,7 @@
       (* vol)))
 
 (defmethod live/play-note :default [{:keys [pitch pan]}]
-  (when pitch (horn :freq pitch :pan (or 0 pan))))
+  (when pitch (horn :freq pitch :pan (or pan 0))))
 
 (defn rand-variations [variations]
   (let [variation (rand-nth variations)]
@@ -159,7 +159,10 @@
 
 (defn pan [{:keys [pitch] :as note}]
   (if pitch
-    (-> note (assoc :pan (-> pitch (/ 9) dec)))
+    (let [p (-> note :pitch (/ 18) dec)]
+      (if (odd? pitch)
+        (assoc note :pan (- p))
+        (assoc note :pan p)))
     note))
 
 (def balendoro ; p 343
@@ -169,9 +172,9 @@
            (map big horns)
            (map (comp big big) horns)
            (map (comp big big big) (take 3 horns)))
+         ;(map (comp list first))
          (map rand-variations)
-         (map after (range 0 (* 8 18) 8))
-         ;(map first)
+         (map after (range 0 (* 4 18) 4))
          (reduce with)
          (map pan))))
 
@@ -199,8 +202,9 @@
   (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
         a (omit 9/5)
         b (omit 0)
-        c (comp a b)]
-    (part model a b c)))
+        c (comp a b)
+        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :clap2)))]
+    (part model a b c d)))
 
 (def third-drum
   (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
@@ -216,8 +220,9 @@
 (def aga-terumo ; p299
   (let [drums [first-drum second-drum third-drum]]
     (->> drums
+         ;(map (comp list first))
          (map rand-variations)
-         ;(map first)
+         (map after (range 0 (* 4 3) 4))
          (reduce with))))
 
 (comment
