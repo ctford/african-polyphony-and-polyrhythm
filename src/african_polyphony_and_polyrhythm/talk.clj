@@ -50,7 +50,7 @@
   [model & variations]
   ((apply juxt identity variations) model))
 
-(def first-drum
+(def child
   (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :child))
         a (split 6/5 1/10)
         b (split 5/5 1/10)
@@ -58,7 +58,7 @@
         d (comp (skip 7/5) (skip 6/5))]
     (part model a b c d)))
 
-(def second-drum
+(def mother
   (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :mother))
         a (skip 9/5)
         b (skip 0)
@@ -66,7 +66,7 @@
         d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :mother)))]
     (part model a b c d)))
 
-(def third-drum
+(def father
   (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :father))
         a (skip 2/5)
         b (skip 3/5)
@@ -79,28 +79,25 @@
 
 (defn introduce-after [t parts]
   (->> parts
-       (map after (range 0 (* (count parts) t) t))))
+       (map after (range 0 (* (count parts) t) t))
+       (reduce with)))
 
 (def aga-terumo ; p299
-  (let [drums [first-drum second-drum third-drum]]
+  (let [drums [child mother father]]
     (->> drums
-         ;(map (comp list first))
          (map rand-variations)
-         (introduce-after 4)
-         (reduce with))))
+         (introduce-after 4))))
 
 (comment
   (->>
     aga-terumo
     (tempo (bpm 90))
-    (live/play)))
+    live/play))
 
 ; Clapping music
-(defn forever [riff]
-  (concat riff (lazy-seq (->> riff forever (after (duration riff))))))
-
 (defn clapping-music []
-  (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
+  (let [forever (comp rand-variations list)
+        african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
     (->> african-bell-pattern forever (all :part :mother)
          (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :child))))))
 
@@ -127,7 +124,7 @@
 (def major (scale [2 2 1 2 2 2 1]))
 (def minor (scale [2 1 2 2 1 2 2]))
 (def pentatonic (scale [2 3 2 2 3]))
-(def car (comp high pentatonic -))
+(def central-african-scale (comp high pentatonic -))
 
 (comment
   (->> (phrase (repeat 1/4) (range 0 8))
@@ -191,16 +188,14 @@
         (big tete) (big ta) (big ha) (big tulule) (big bongo)
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
-       ;(map (comp list first))
        (map rand-variations)
-       (introduce-after 4)
-       (reduce with)
-       (map pan)))
+       (introduce-after 4)))
 
 (comment
   (->>
     ndereje-balendoro
-    (where :pitch (comp temperament/equal A car))
+    (map pan)
+    (where :pitch (comp temperament/equal A central-african-scale))
     (tempo (bpm 120))
     (live/play)))
 
