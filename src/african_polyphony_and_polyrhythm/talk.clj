@@ -25,7 +25,7 @@
 ; Scales
 (def major (scale [2 2 1 2 2 2 1]))
 (def minor (scale [2 1 2 2 1 2 2]))
-(def pentatonic (scale [3 2 2 3 2]))
+(def pentatonic (scale [2 3 2 2 3]))
 (def car (comp high pentatonic -))
 
 (comment
