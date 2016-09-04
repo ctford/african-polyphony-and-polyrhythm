@@ -51,7 +51,7 @@
   ((apply juxt identity variations) model))
 
 (def first-drum
-  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :clap1))
+  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :child))
         a (split 6/5 1/10)
         b (split 5/5 1/10)
         c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
@@ -59,15 +59,15 @@
     (part model a b c d)))
 
 (def second-drum
-  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :clap2))
+  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :mother))
         a (skip 9/5)
         b (skip 0)
         c (comp a b)
-        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :clap2)))]
+        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :mother)))]
     (part model a b c d)))
 
 (def third-drum
-  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :clap3))
+  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :father))
         a (skip 2/5)
         b (skip 3/5)
         c (comp (split 0 1/5) a)
@@ -101,8 +101,8 @@
 
 (defn clapping-music []
   (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
-    (->> african-bell-pattern forever (all :part :clap1)
-         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :clap2))))))
+    (->> african-bell-pattern forever (all :part :mother)
+         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :child))))))
 
 (comment
   (->> (clapping-music)
@@ -215,13 +215,13 @@
       (pan2 pan)
       (* vol)))
 
-(defmethod live/play-note :clap1 [_]
+(defmethod live/play-note :child [_]
   (drum 225 :pan 0.75))
 
-(defmethod live/play-note :clap2 [_]
+(defmethod live/play-note :mother [_]
   (drum 150 :pan -0.75))
 
-(defmethod live/play-note :clap3 [_]
+(defmethod live/play-note :father [_]
   (drum 75 :pan 0))
 
 (definst horn [freq 440 vol 0.5 pan 0]
