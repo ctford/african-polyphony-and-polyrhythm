@@ -1,11 +1,37 @@
 (ns african-polyphony-and-polyrhythm.talk
-  (:require [overtone.live :refer :all :exclude [stop]]
+  (:require [overtone.live :refer :all :exclude [stop scale]]
             [leipzig.melody :refer :all]
             [leipzig.canon :refer [canon]]
-            [leipzig.scale :refer [A B major minor pentatonic high]]
+            [leipzig.scale :refer [scale A B high low]]
             [leipzig.temperament :as temperament]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
+
+; Natural numbers
+(comment
+  (range 0 8))
+
+; Raw frequencies
+(comment
+  (->> (phrase (repeat 1/4) [440 494 554 622 659 740 831 880])
+       live/play))
+
+; Midi
+(comment
+  (->> (phrase (repeat 1/4) [69 71 73 74 76 78 80 81])
+       (where :pitch temperament/equal)
+       live/play))
+
+; Scales
+(def major (scale [2 2 1 2 2 2 1]))
+(def minor (scale [2 1 2 2 1 2 2]))
+(def pentatonic (scale [3 2 2 3 2]))
+(def car (comp high pentatonic -))
+
+(comment
+  (->> (phrase (repeat 1/4) (range 0 8))
+       (where :pitch (comp temperament/equal A major))
+       live/play))
 
 (defn forever [riff]
   (concat riff (lazy-seq (->> riff forever (after (duration riff))))))
@@ -16,8 +42,7 @@
          (canon #(->> % (take 64) (then (rhythm [1/8])) forever (all :part :clap2))))))
 
 (comment
-  (live/play (clapping-music))
-  )
+  (live/play (clapping-music)))
 
 (defmethod live/play-note :clap1 [_]
   ((sample "samples/click2.wav")))
@@ -61,7 +86,7 @@
       (* vol)))
 
 (defmethod live/play-note :default [{:keys [pitch pan]}]
-  (when pitch (horn :freq pitch :pan pan)))
+  (when pitch (horn :freq pitch :pan (or 0 pan))))
 
 (defn rand-variations [variations]
   (concat
@@ -133,15 +158,13 @@
          (reduce with)
          (map pan))))
 
-(def inverse-pentatonic (comp high pentatonic -))
-
 (comment
   (fx-reverb)
   (map fx-chorus [0 1])
   (map fx-distortion [0 1])
   (->>
     balendoro
-    (where :pitch (comp (temperament/just 66) A inverse-pentatonic))
+    (where :pitch (comp temperament/equal A car))
     (tempo (bpm 120))
     (live/play)
     )
