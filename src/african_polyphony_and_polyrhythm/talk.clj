@@ -2,8 +2,7 @@
   (:require [overtone.live :refer :all :exclude [stop scale]]
             [leipzig.melody :refer :all]
             [leipzig.canon :refer [canon]]
-            [leipzig.scale :refer [scale A B high low from]]
-            [leipzig.temperament :as temperament]
+            [leipzig.scale :refer [scale high low from]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
 
@@ -137,12 +136,21 @@
 ; Raw frequencies
 (comment
   (->> (phrase (repeat 1/4) [440 494 554 622 659 740 831 880])
+       live/play)
+
+  ; Inaudible
+  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
        live/play))
 
 ; Midi
 (comment
   (->> (phrase (repeat 1/4) [69 71 73 74 76 78 80 81])
-       (where :pitch temperament/equal)
+       (where :pitch midi->hz)
+       live/play)
+
+  ; Inaudible
+  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
+       (where :pitch midi->hz)
        live/play))
 
 ; Scales
@@ -152,8 +160,30 @@
 (def central-african-scale (comp high pentatonic -))
 
 (comment
+  (major 0)
+  (major 2)
+  (minor 2)
+
+  (central-african-scale 0)
+  (central-african-scale 2)
+
+  ; Inaudible
+  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
+       (where :pitch (comp midi->hz major))
+       live/play))
+
+; Keys
+(def A #(+ 69 %))
+(def B #(+ 71 %))
+(def C #(+ 72 %))
+
+(comment
   (->> (phrase (repeat 1/4) (range 0 8))
-       (where :pitch (comp temperament/equal A major))
+       (where :pitch (comp midi->hz A major))
+       live/play)
+
+  (->> (phrase (repeat 1/4) (range 0 8))
+       (where :pitch (comp midi->hz A central-african-scale))
        live/play))
 
 
@@ -223,7 +253,7 @@
   (->>
     ndereje-balendoro
     (map pan)
-    (where :pitch (comp temperament/equal A central-african-scale))
+    (where :pitch (comp midi->hz A central-african-scale))
     (tempo (bpm 120))
     (live/play)))
 
