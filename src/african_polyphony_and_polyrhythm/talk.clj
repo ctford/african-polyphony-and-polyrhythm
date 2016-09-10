@@ -290,7 +290,7 @@
   (drum 150 :pan -0.75))
 
 (defmethod live/play-note :father [_]
-  (drum 75 :pan 0))
+  (drum 75 :pan 0 :vol 1.0))
 
 (definst horn [freq 440 vol 0.5 pan 0]
   (-> (sin-osc freq)
