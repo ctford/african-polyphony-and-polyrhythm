@@ -52,8 +52,11 @@
 
 (defn part
   "Generate version of the model using the variations fns."
-  [model & variations]
-  ((apply juxt identity variations) model))
+  [instrument model & variations]
+  (->>
+    model
+    ((apply juxt identity variations))
+    (map (partial all :part instrument))))
 
 (defn introduce-after
   "Gradually introduce each part after t beats."
@@ -74,18 +77,18 @@
         b (split 5/5 1/10)
         c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
         d (comp (skip 7/5) (skip 6/5))]
-    (part model a b c d)))
+    (part :child model a b c d)))
 
 (def mother
-  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]) (all :part :mother))
+  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]))
         a (skip 9/5)
         b (skip 0)
         c (comp a b)
-        d #(then % (->> (rhythm (repeat 5 2/5)) (all :part :mother)))]
-    (part model a b c d)))
+        d #(then % (->> (rhythm (repeat 5 2/5))))]
+    (part :mother model a b c d)))
 
 (def father
-  (let [model (->> (rhythm [2/5 1/5 2/5]) (all :part :father))
+  (let [model (->> (rhythm [2/5 1/5 2/5]))
         a (skip 2/5)
         b (skip 3/5)
         c (comp (split 0 1/5) a)
@@ -93,7 +96,7 @@
         e (comp (split 3/5 1/10) d)
         f (split 0 1/5)
         g (comp (split 0 1/10) f)]
-    (part model a b c d e f g)))
+    (part :father model a b c d e f g)))
 
 (def aga-terumo ; p299
   (let [drums [child mother father]]
@@ -205,7 +208,7 @@
         b (comp (split 1/4 1/4) a)
         c (comp (accent 2/4) (split 2/4 1/4) b)
         d (comp (skip 0/4) c)]
-    (part model a b c d)))
+    (part :horn model a b c d)))
 
 (def ta
   (let [model (->> (phrase [5/4 3/4 4/4] (repeat 1)) (after 4/4))
@@ -214,7 +217,7 @@
         c (comp (accent 11/4) (split 11/4 1/8) b) ; 17
         d (split 4/4 1/4)
         e (comp (skip 10/4) c)] ; 8
-    (part model a b c d e)))
+    (part :horn model a b c d e)))
 
 (def ha
   (let [model (->> (phrase [12/4 2/4] (repeat 2)) (after 2/4))
@@ -222,14 +225,14 @@
         b (comp (split 6/4 1/4))
         c (comp (split 0 1/4) b)
         d (comp a b)]
-    (part model a b c d)))
+    (part :horn model a b c d)))
 
 (def tulule
   (let [model (phrase [8/4 8/4] (repeat 3))
         a (comp (split 8/4 2/4) (split 0 2/4)) ; 28
         b (comp (split 0 1/4) (split 2/4 1/4) a) ; 6
         c (comp (accent 7/8) (split 3/4 1/8) b)] ; 5
-    (part model a b c)))
+    (part :horn model a b c)))
 
 (def bongo
   (let [model (->> (phrase [3/4 7/4] (repeat 4)) (after 6/4)) ; 5
@@ -237,7 +240,7 @@
         b (comp (split 6/4 1/4) a) ; 9
         c (comp (split 14/4 1/4) b) ; 8
         d (comp (accent 10/4) (split 9/4 1/4) b)] ; 19
-    (part model a b c d)))
+    (part :horn model a b c d)))
 
 (defn big [notes]
   (->> notes (map #(where :pitch (from 5) %))))
@@ -262,7 +265,7 @@
     (map pan)
     (where :pitch (comp midi->hz A central-african-scale))
     (tempo (bpm 120))
-    (live/play)))
+    live/play))
 
 
 
@@ -301,5 +304,5 @@
       (pan2 pan)
       (* vol)))
 
-(defmethod live/play-note :default [{:keys [pitch pan]}]
-  (when pitch (horn :freq pitch :pan (or pan 0))))
+(defmethod live/play-note :horn [{:keys [pitch pan]}]
+  (horn :freq pitch :pan (or pan 0)))
