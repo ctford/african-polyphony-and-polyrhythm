@@ -48,12 +48,12 @@
       variation
       (lazy-seq
         (->> (rand-variations variations)
-             (after (duration variation) ))))))
+             (after (duration variation)))))))
 
 (defn part
   "Generate version of the model using the variations fns."
   [instrument model & variations]
-  (let [vary (apply juxt identity variations)]
+  (let [vary (apply juxt variations)]
     (->> model
          vary
          (map #(all :part instrument %)))))
@@ -71,44 +71,49 @@
 ; Aga Terumo ;
 ;;;;;;;;;;;;;;
 
-(def child
+(def child "First drum"
   (let [model (rhythm [2/5 3/5 1/5 1/5 3/5])
-        a (split 6/5 1/10)
-        b (split 5/5 1/10)
+        a identity
+        b (split 6/5 1/10)
         c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
-        d (comp (skip 7/5) (skip 6/5))]
-    (part :child model a b c d)))
+        d (split 5/5 1/10)
+        e (comp (skip 7/5) (skip 6/5))]
+    (part :child model a b c d e)))
 
-(def mother
+(def mother "Second drum"
   (let [model (rhythm [2/5 2/5 4/5 1/5 1/5])
-        a (skip 9/5)
-        b (skip 0)
-        c (comp a b)
-        d #(then % (->> (rhythm (repeat 5 2/5))))]
-    (part :mother model a b c d)))
+        a (skip 0)
+        c identity
+        d (skip 9/5)
+        b (comp a d)
+        e #(->> (rhythm (repeat 5 2/5)) (then %))]
+    (part :mother model a b c d e)))
 
-(def father
+(def father "Third drum"
   (let [model (rhythm [2/5 1/5 2/5])
-        a (skip 2/5)
-        b (skip 3/5)
-        c (comp (split 0 1/5) a)
+        a identity
         d (split 3/5 1/5)
-        e (comp (split 3/5 1/10) d)
-        f (split 0 1/5)
-        g (comp (split 0 1/10) f)]
-    (part :father model a b c d e f g)))
+        c (comp (split 3/5 1/10) d)
+        e (split 2/5 3/10)
+        f (skip 2/5)
+        b (comp (split 0 1/5) f)
+        g (comp b d)
+        h (comp (split 1/10 1/10) e)
+        i (split 0 1/5)
+        j (skip 3/5)]
+    (part :father model a b c d e f g h i j)))
 
-(def aga-terumo ; p299
+(defn aga-terumo
+  "Banda-Linda ritual music - page 299"
+  []
   (let [drums [child mother father]]
     (->> drums
          (map rand-variations)
-         (introduce-after 4))))
+         (introduce-after 4)
+         (tempo (bpm 90)))))
 
 (comment
-  (->>
-    aga-terumo
-    (tempo (bpm 90))
-    live/play))
+  (live/play (aga-terumo)))
 
 
 
@@ -243,9 +248,10 @@
     (part :horn model a b c d)))
 
 (defn big
-  "Take all the variations down a (pentatonic) octave."
+  "Make a set of variations one pentatonic octave bigger."
   [notes]
-  (->> notes (map #(where :pitch (from 5) %))))
+  (->> notes
+       (map #(where :pitch (from 5) %))))
 
 (defn pan
   "Pan out an 18 piece orchestra to make individual parts more distinct."
