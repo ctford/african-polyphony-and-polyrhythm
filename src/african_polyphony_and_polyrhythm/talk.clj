@@ -12,7 +12,7 @@
 ; Ostinato with variations ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn vary
+(defn target
   "Apply f to the note at time t."
   [t f]
   (fn [notes]
@@ -27,18 +27,18 @@
   (letfn [(f [note]
             [(-> note (assoc :duration duration))
              (-> note (update :duration - duration) (update :time + duration))])]
-    (vary t f)))
+    (target t f)))
 
 (defn accent
   "Accent the pitch of the note at time t."
   [t]
   (letfn [(f [note] [(-> note (update :pitch dec))])]
-    (vary t f)))
+    (target t f)))
 
 (defn skip
   "Skip the note at time t."
   [t]
-  (vary t (constantly [])))
+  (target t (constantly [])))
 
 (defn rand-variations
   "Assemble an infinite random concatenation of variations."
@@ -53,10 +53,10 @@
 (defn part
   "Generate version of the model using the variations fns."
   [instrument model & variations]
-  (->>
-    model
-    ((apply juxt identity variations))
-    (map (partial all :part instrument))))
+  (let [vary (apply juxt identity variations)]
+    (->> model
+         vary
+         (map #(all :part instrument %)))))
 
 (defn introduce-after
   "Gradually introduce each part after t beats."
@@ -72,7 +72,7 @@
 ;;;;;;;;;;;;;;
 
 (def child
-  (let [model (->> (rhythm [2/5 3/5 1/5 1/5 3/5]) (all :part :child))
+  (let [model (rhythm [2/5 3/5 1/5 1/5 3/5])
         a (split 6/5 1/10)
         b (split 5/5 1/10)
         c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
@@ -80,7 +80,7 @@
     (part :child model a b c d)))
 
 (def mother
-  (let [model (->> (rhythm [2/5 2/5 4/5 1/5 1/5]))
+  (let [model (rhythm [2/5 2/5 4/5 1/5 1/5])
         a (skip 9/5)
         b (skip 0)
         c (comp a b)
@@ -88,7 +88,7 @@
     (part :mother model a b c d)))
 
 (def father
-  (let [model (->> (rhythm [2/5 1/5 2/5]))
+  (let [model (rhythm [2/5 1/5 2/5])
         a (skip 2/5)
         b (skip 3/5)
         c (comp (split 0 1/5) a)
