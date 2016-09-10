@@ -115,10 +115,10 @@
 ;;;;;;;;;;;;;;;;;;
 
 (defn clapping-music []
-  (let [forever (comp rand-variations list)
+  (let [ostinato #(rand-variations [%])
         african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
-    (->> african-bell-pattern forever (all :part :mother)
-         (canon #(->> % (take 32) (then (rhythm [1/8])) forever (all :part :child))))))
+    (->> african-bell-pattern ostinato (all :part :mother)
+         (canon #(->> % (take 32) (then (rhythm [1/8])) ostinato (all :part :child))))))
 
 (comment
   (->> (clapping-music)
