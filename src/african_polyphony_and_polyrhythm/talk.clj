@@ -127,8 +127,7 @@
          (canon #(->> % (take 32) (then (rhythm [1/8])) ostinato (all :part :child))))))
 
 (comment
-  (->> (clapping-music)
-       live/play))
+  (live/play (clapping-music)))
 
 
 
@@ -260,21 +259,19 @@
                    (-> pitch (/ 18) dec -))]
     (assoc note :pan position)))
 
-(def ndereje-balendoro ; p 343
+(defn ndereje-balendoro [] ; p 343
   (->> [tete ta ha tulule bongo
         (big tete) (big ta) (big ha) (big tulule) (big bongo)
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
        (map rand-variations)
-       (introduce-after 4)))
+       (introduce-after 4)
+       (map pan)
+       (where :pitch (comp midi->hz A central-african-scale))
+       (tempo (bpm 120))))
 
 (comment
-  (->>
-    ndereje-balendoro
-    (map pan)
-    (where :pitch (comp midi->hz A central-african-scale))
-    (tempo (bpm 120))
-    live/play))
+  (live/play (ndereje-balendoro)))
 
 
 
