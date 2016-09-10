@@ -242,14 +242,18 @@
         d (comp (accent 10/4) (split 9/4 1/4) b)] ; 19
     (part :horn model a b c d)))
 
-(defn big [notes]
+(defn big
+  "Take all the variations down a (pentatonic) octave."
+  [notes]
   (->> notes (map #(where :pitch (from 5) %))))
 
-(defn pan [{:keys [pitch] :as note}]
-  (let [p (cond (not pitch) 0
-                (odd? pitch) (-> pitch (/ 18) dec -)
-                (even? pitch) (-> pitch (/ 18) dec))]
-    (assoc note :pan p)))
+(defn pan
+  "Pan out an 18 piece orchestra to make individual parts more distinct."
+  [{:keys [pitch] :as note}]
+  (let [position (if (even? pitch)
+                   (-> pitch (/ 18) dec)
+                   (-> pitch (/ 18) dec -))]
+    (assoc note :pan position)))
 
 (def ndereje-balendoro ; p 343
   (->> [tete ta ha tulule bongo
