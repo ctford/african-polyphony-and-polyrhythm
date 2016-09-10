@@ -56,6 +56,13 @@
   [model & variations]
   ((apply juxt identity variations) model))
 
+(defn introduce-after
+  "Gradually introduce each part after t beats."
+  [t parts]
+  (->> parts
+       (map after (range 0 (* (count parts) t) t))
+       (reduce with)))
+
 
 
 ;;;;;;;;;;;;;;
@@ -88,11 +95,6 @@
         f (split 0 1/5)
         g (comp (split 0 1/10) f)]
     (part model a b c d e f g)))
-
-(defn introduce-after [t parts]
-  (->> parts
-       (map after (range 0 (* (count parts) t) t))
-       (reduce with)))
 
 (def aga-terumo ; p299
   (let [drums [child mother father]]
