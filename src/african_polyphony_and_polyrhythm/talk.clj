@@ -137,8 +137,7 @@
 ;;;;;;;;;;;;;;;;;;
 
 ; Natural numbers
-(comment
-  (range 0 8))
+(def natural-numbers (range 0 8))
 
 ; Raw frequencies
 (comment
@@ -146,7 +145,7 @@
        live/play)
 
   ; Inaudible
-  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
+  (->> (phrase (repeat 1/4) natural-numbers)
        live/play))
 
 ; Midi
@@ -156,7 +155,7 @@
        live/play)
 
   ; Inaudible
-  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
+  (->> (phrase (repeat 1/4) natural-numbers)
        (where :pitch midi->hz)
        live/play))
 
@@ -167,15 +166,12 @@
 (def central-african-scale (comp high pentatonic -))
 
 (comment
-  (major 0)
-  (major 2)
-  (minor 2)
-
-  (central-african-scale 0)
-  (central-african-scale 2)
+  (map major natural-numbers)
+  (map minor natural-numbers)
+  (map central-african-scale natural-numbers)
 
   ; Inaudible
-  (->> (phrase (repeat 1/4) [0 1 2 3 4 5 6 7])
+  (->> (phrase (repeat 1/4) natural-numbers)
        (where :pitch (comp midi->hz major))
        live/play))
 
@@ -185,11 +181,15 @@
 (def C #(+ 72 %))
 
 (comment
-  (->> (phrase (repeat 1/4) (range 0 8))
+  (map (comp A major) natural-numbers)
+  (map (comp A minor) natural-numbers)
+  (map (comp A central-african-scale) natural-numbers)
+
+  (->> (phrase (repeat 1/4) natural-numbers)
        (where :pitch (comp midi->hz A major))
        live/play)
 
-  (->> (phrase (repeat 1/4) (range 0 8))
+  (->> (phrase (repeat 1/4) natural-numbers)
        (where :pitch (comp midi->hz A central-african-scale))
        live/play))
 
