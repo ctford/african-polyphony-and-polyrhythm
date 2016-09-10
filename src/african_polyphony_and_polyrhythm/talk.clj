@@ -259,7 +259,9 @@
                    (-> pitch (/ 18) dec -))]
     (assoc note :pan position)))
 
-(defn ndereje-balendoro [] ; p 343
+(defn ndereje-balendoro
+  "Linda horn music - page 316"
+  []
   (->> [tete ta ha tulule bongo
         (big tete) (big ta) (big ha) (big tulule) (big bongo)
         (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
