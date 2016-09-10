@@ -72,21 +72,21 @@
 ;;;;;;;;;;;;;;
 
 (def child "First drum"
-  (let [model (rhythm [2/5 3/5 1/5 1/5 3/5])
-        a identity
-        b (split 6/5 1/10)
-        c (comp (split 17/15 2/15) (split 5/5 2/15) (skip 6/5))
-        d (split 5/5 1/10)
-        e (comp (skip 7/5) (skip 6/5))]
+  (let [model (rhythm [2/5 3/5 5/5])
+        a (comp (split 6/5 1/5) (split 5/5 1/5))
+        b (comp (split 6/5 1/10) a)
+        c (comp (split 17/15 2/15) (split 5/5 2/15) (split 5/5 2/5))
+        d (comp (split 5/5 1/10) a)
+        e identity]
     (part :child model a b c d e)))
 
 (def mother "Second drum"
-  (let [model (rhythm [2/5 2/5 4/5 1/5 1/5])
-        a (skip 0)
-        c identity
-        d (skip 9/5)
-        b (comp a d)
-        e #(->> (rhythm (repeat 5 2/5)) (then %))]
+  (let [model (rhythm [2/5 2/5 4/5 2/5])
+        b (skip 0)
+        c (split 8/5 1/5)
+        a (comp b c)
+        d identity
+        e (comp c #(->> (rhythm (repeat 5 2/5)) (then %)))]
     (part :mother model a b c d e)))
 
 (def father "Third drum"
@@ -99,9 +99,8 @@
         b (comp (split 0 1/5) f)
         g (comp b d)
         h (comp (split 1/10 1/10) e)
-        i (split 0 1/5)
-        j (skip 3/5)]
-    (part :father model a b c d e f g h i j)))
+        i (split 0 1/5)]
+    (part :father model a b c d e f g h i)))
 
 (defn aga-terumo
   "Banda-Linda ritual music - page 299"
