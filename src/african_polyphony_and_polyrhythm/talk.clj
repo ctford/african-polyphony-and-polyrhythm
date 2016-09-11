@@ -301,7 +301,7 @@
 (defmethod live/play-note :father [_]
   (drum 75 :pan 0 :vol 1.0))
 
-(definst whistle [freq 660 vol 0.5 pan 0 dur 0.5]
+(definst whistle [freq 880 vol 0.5 pan 0 dur 0.2]
   (-> (sin-osc freq)
       (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
       (+ (* 1/5 (sin-osc (* 2 freq))))
@@ -315,3 +315,6 @@
 
 (defmethod live/play-note :horn [{:keys [pitch pan duration]}]
   (whistle :freq pitch :pan (or pan 0) :dur (min duration 0.2)))
+
+(defmethod live/play-note :default [note]
+  (-> note (assoc :part :horn) live/play-note))
