@@ -116,6 +116,14 @@
 
 
 
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;
 ; Clapping Music ;
 ;;;;;;;;;;;;;;;;;;
@@ -147,62 +155,56 @@
 
 ; Raw frequencies
 (comment
-  (->> (phrase (repeat 1/4) [440 494 554 622 659 740 831 880])
-       live/play)
-
-  ; Inaudible
-  (->> (phrase (repeat 1/4) natural-numbers)
+  (->> (phrase (repeat 1/4) [440.0 493.9 554.4 587.3 659.3 740.0 830.6 880.0])
        live/play))
 
 ; Midi
 (comment
   (->> (phrase (repeat 1/4) [69 71 73 74 76 78 80 81])
        (where :pitch midi->hz)
-       live/play)
+       live/play))
 
-  ; Inaudible
-  (->> (phrase (repeat 1/4) natural-numbers)
-       (where :pitch midi->hz)
+; Keys
+(defn A [midi] (+ midi 69))
+(defn B [midi] (+ midi 71))
+(defn C [midi] (+ midi 72))
+
+(comment
+  (->> (phrase (repeat 1/4) [0 2 4 5 7 9 11 12])
+       (where :pitch (comp midi->hz A))
        live/play))
 
 ; Scales
 (def major (scale [2 2 1 2 2 2 1]))
 (def minor (scale [2 1 2 2 1 2 2]))
 (def pentatonic (scale [2 3 2 2 3]))
-(def central-african-scale (comp high pentatonic -))
+
+(def central-african-scale (comp pentatonic -))
 
 (comment
-  (map major natural-numbers)
-  (map minor natural-numbers)
-  (map central-african-scale natural-numbers)
+  (map (comp A major) (range 0 8))
+  (map (comp A minor) (range 0 8))
+  (map (comp A central-african-scale) (range 0 6))
 
-  ; Inaudible
-  (->> (phrase (repeat 1/4) natural-numbers)
-       (where :pitch (comp midi->hz major))
-       live/play))
-
-; Keys
-(def A #(+ 69 %))
-(def B #(+ 71 %))
-(def C #(+ 72 %))
-
-(comment
-  (map (comp A major) natural-numbers)
-  (map (comp A minor) natural-numbers)
-  (map (comp A central-african-scale) natural-numbers)
-
-  (->> (phrase (repeat 1/4) natural-numbers)
+  (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp midi->hz A major))
        live/play)
 
-  (->> (phrase (repeat 1/4) natural-numbers)
+  (->> (phrase (repeat 1/4) (range 0 6))
        (where :pitch (comp midi->hz A central-african-scale))
        live/play))
 
 
 
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;
-; Ndereje Balendoro ; p 343
+; Ndereje Balendoro ;
 ;;;;;;;;;;;;;;;;;;;;;
 
 (def tete
@@ -270,11 +272,14 @@
        (map rand-variations)
        (introduce-after 4)
        (map pan)
-       (where :pitch (comp midi->hz A central-african-scale))
+       (where :pitch (comp midi->hz high A central-african-scale))
        (tempo (bpm 120))))
 
 (comment
   (live/play (ndereje-balendoro)))
+
+
+
 
 
 
