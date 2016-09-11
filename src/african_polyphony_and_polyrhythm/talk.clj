@@ -300,7 +300,7 @@
 (defmethod live/play-note :father [_]
   (drum 75 :pan 0 :vol 1.0))
 
-(definst horn [freq 440 vol 0.5 pan 0]
+(definst whistle [freq 440 vol 0.5 pan 0 dur 1.0]
   (-> (sin-osc freq)
       (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
       (+ (* 1/5 (sin-osc (* 2 freq))))
@@ -308,9 +308,9 @@
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
       (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
-      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 0.1) :action FREE))
+      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 dur) :action FREE))
       (pan2 pan)
       (* vol)))
 
 (defmethod live/play-note :horn [{:keys [pitch pan]}]
-  (horn :freq pitch :pan (or pan 0)))
+  (whistle :freq pitch :pan (or pan 0) :dur 0.1))
