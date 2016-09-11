@@ -263,9 +263,10 @@
   "Linda horn music - page 316"
   []
   (->> [tete ta ha tulule bongo
-        (big tete) (big ta) (big ha) (big tulule) (big bongo)
-        (big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
-        (big (big (big tete))) (big (big (big ta))) (big (big (big ha)))]
+        ;(big tete) (big ta) (big ha) (big tulule) (big bongo)
+        ;(big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
+        ;(big (big (big tete))) (big (big (big ta))) (big (big (big ha)))
+        ]
        (map rand-variations)
        (introduce-after 4)
        (map pan)
@@ -308,9 +309,9 @@
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
       (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
-      (* (env-gen (adsr 0.2 0.1 0.25 0.2) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.1 0.1 0.35 0.05) (line:kr 1 0 dur) :action FREE))
       (pan2 pan)
       (* vol)))
 
-(defmethod live/play-note :horn [{:keys [pitch pan]}]
-  (whistle :freq pitch :pan (or pan 0) :dur 0.1))
+(defmethod live/play-note :horn [{:keys [pitch pan duration]}]
+  (whistle :freq pitch :pan (or pan 0) :dur (min duration 0.2)))
