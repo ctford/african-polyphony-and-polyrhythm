@@ -1,7 +1,6 @@
 (ns african-polyphony-and-polyrhythm.talk
   (:require [overtone.live :refer :all :exclude [stop scale]]
             [leipzig.melody :refer :all]
-            [leipzig.canon :refer [canon]]
             [leipzig.scale :refer [scale high low from]]
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]))
@@ -128,19 +127,23 @@
 ; Clapping Music ;
 ;;;;;;;;;;;;;;;;;;
 
-(defn clapping-music []
-  (let [ostinato #(rand-variations [%])
-        african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])]
-    (->> african-bell-pattern ostinato (all :part :mother)
-         (canon #(->> % (take 32) (then (rhythm [1/8])) ostinato (all :part :child))))))
+(defn clapping-music
+  "Steve Reich's 'Clapping Music'"
+  []
+  (let [african-bell-pattern (rhythm [1/8 1/8 1/4 1/8 1/4 1/4 1/8 1/4])
+        ostinato #(rand-variations [%])]
+    (with
+      (->> african-bell-pattern
+           ostinato
+           (all :part :mother))
+      (->> african-bell-pattern
+           (times 4)
+           (then (rhythm [1/8]))
+           ostinato
+           (all :part :child)))))
 
 (comment
   (live/play (clapping-music)))
-
-
-
-
-
 
 
 
