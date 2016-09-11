@@ -308,7 +308,7 @@
       (+ (* 1/8 (sin-osc (* 7.01 freq))))
       (clip2 0.8)
       (rlpf (line:kr (* 2 freq) (* 7 freq) 0.8))
-      (* (env-gen (adsr 0.2 0.4 0.15 0.2) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.2 0.1 0.25 0.2) (line:kr 1 0 dur) :action FREE))
       (pan2 pan)
       (* vol)))
 
