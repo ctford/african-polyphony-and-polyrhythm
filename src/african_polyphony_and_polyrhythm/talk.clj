@@ -282,7 +282,7 @@
 ; Instruments ;
 ;;;;;;;;;;;;;;;
 
-(definst drum [freq 440 vol 0.5 pan 0]
+(definst drum [freq 110 vol 0.5 pan 0]
   (-> (* 2/3 (brown-noise))
       (+ (* 1/2 (sin-osc (* 3 freq))))
       (+ (* 1/5 (sin-osc (* 5 freq))))
@@ -301,7 +301,7 @@
 (defmethod live/play-note :father [_]
   (drum 75 :pan 0 :vol 1.0))
 
-(definst whistle [freq 440 vol 0.5 pan 0 dur 1.0]
+(definst whistle [freq 660 vol 0.5 pan 0 dur 0.5]
   (-> (sin-osc freq)
       (+ (* 1/2 (sin-osc 3) (sin-osc (* 3.01 freq))))
       (+ (* 1/5 (sin-osc (* 2 freq))))
