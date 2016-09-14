@@ -137,6 +137,7 @@
 
 
 
+
 ;;;;;;;;;;;;;;;;;;
 ; Clapping Music ;
 ;;;;;;;;;;;;;;;;;;
@@ -163,6 +164,7 @@
 
 
 
+
 ;;;;;;;;;;;;;;;;;;
 ; Natural scales ;
 ;;;;;;;;;;;;;;;;;;
@@ -177,9 +179,14 @@
 
 ; Midi
 (comment
+
+  (midi->hz 69) ; 440.0
+  (midi->hz 71) ; 493.9
+
   (->> (phrase (repeat 1/4) [69 71 73 74 76 78 80 81])
        (where :pitch midi->hz)
        live/play))
+
 
 ; Keys
 (defn A [midi] (+ midi 69))
@@ -196,20 +203,29 @@
 (def minor (scale [2 1 2 2 1 2 2]))
 (def pentatonic (scale [2 3 2 2 3]))
 
-(def central-african-scale (comp pentatonic -))
-
 (comment
   (map (comp A major) (range 0 8))
   (map (comp A minor) (range 0 8))
-  (map (comp A central-african-scale) (range 0 6))
+  (map (comp A pentatonic) (range 0 6))
 
   (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp midi->hz A major))
-       live/play)
+       live/play))
+
+
+; Little-endian scale
+(def little-endian-pentatonic
+  "In Central African music, we play scales from small sounds to big ones."
+  (comp pentatonic -))
+
+(comment
+  (map (comp A little-endian-pentatonic) (range 0 6))
 
   (->> (phrase (repeat 1/4) (range 0 6))
-       (where :pitch (comp midi->hz A central-african-scale))
+       (where :pitch (comp midi->hz A little-endian-pentatonic))
        live/play))
+
+
 
 
 
@@ -275,7 +291,7 @@
        (map rand-variations)
        (introduce-after 4)
        (map pan)
-       (where :pitch (comp midi->hz high A central-african-scale))
+       (where :pitch (comp midi->hz high A little-endian-pentatonic))
        (tempo (bpm 120))))
 
 (comment
@@ -322,7 +338,9 @@
       (* vol)))
 
 (defmethod live/play-note :horn [{:keys [pitch pan duration]}]
-  (whistle :freq pitch :pan (or pan 0) :dur (min duration 0.2)))
+  (whistle :freq pitch :pan (or pan 0) :dur (min duration 0.2))
+  ;(drum :freq pitch :pan (or pan 0) :dur (min duration 0.2))
+  )
 
-(defmethod live/play-note :default [note]
-  (-> note (assoc :part :horn) live/play-note))
+(defmethod live/play-note :default [{:keys [pitch duration]}]
+  (whistle :freq pitch :dur duration))
