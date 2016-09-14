@@ -252,9 +252,9 @@
   (let [model (->> (phrase [5/4 3/4 4/4] (repeat 1)) (after 4/4))
         a (split 9/4 1/4)
         b (comp (split 10/4 1/4) a)
-        c (comp (accent 11/4) (split 11/4 1/8) b) ; 17
+        c (comp (accent 11/4) (split 11/4 1/8) b)
         d (split 4/4 1/4)
-        e (comp (skip 10/4) c)] ; 8
+        e (comp (skip 10/4) c)]
     (part :horn model a b c d e)))
 
 (def ha
@@ -267,17 +267,17 @@
 
 (def tulule
   (let [model (phrase [8/4 8/4] (repeat 3))
-        a (comp (split 8/4 2/4) (split 0 2/4)) ; 28
-        b (comp (split 0 1/4) (split 2/4 1/4) a) ; 6
-        c (comp (accent 7/8) (split 3/4 1/8) b)] ; 5
+        a (comp (split 8/4 2/4) (split 0 2/4))
+        b (comp (split 0 1/4) (split 2/4 1/4) a)
+        c (comp (accent 7/8) (split 3/4 1/8) b)]
     (part :horn model a b c)))
 
 (def bongo
-  (let [model (->> (phrase [3/4 7/4] (repeat 4)) (after 6/4)) ; 5
-        a (split 9/4 5/4) ; 6
-        b (comp (split 6/4 1/4) a) ; 9
-        c (comp (split 14/4 1/4) b) ; 8
-        d (comp (accent 10/4) (split 9/4 1/4) b)] ; 19
+  (let [model (->> (phrase [3/4 7/4] (repeat 4)) (after 6/4))
+        a (split 9/4 5/4)
+        b (comp (split 6/4 1/4) a)
+        c (comp (split 14/4 1/4) b)
+        d (comp (accent 10/4) (split 9/4 1/4) b)]
     (part :horn model a b c d)))
 
 (defn ndereje-balendoro
