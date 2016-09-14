@@ -64,6 +64,20 @@
        (map after (range 0 (* (count parts) t) t))
        (reduce with)))
 
+(defn big
+  "Make a set of variations one pentatonic octave bigger."
+  [notes]
+  (->> notes
+       (map #(where :pitch (from 5) %))))
+
+(defn pan
+  "Pan out an 18 piece orchestra to make individual parts more distinct."
+  [{:keys [pitch] :as note}]
+  (let [position (if (even? pitch)
+                   (-> pitch (/ 18) dec)
+                   (-> pitch (/ 18) dec -))]
+    (assoc note :pan position)))
+
 
 
 ;;;;;;;;;;;;;;
@@ -249,20 +263,6 @@
         c (comp (split 14/4 1/4) b) ; 8
         d (comp (accent 10/4) (split 9/4 1/4) b)] ; 19
     (part :horn model a b c d)))
-
-(defn big
-  "Make a set of variations one pentatonic octave bigger."
-  [notes]
-  (->> notes
-       (map #(where :pitch (from 5) %))))
-
-(defn pan
-  "Pan out an 18 piece orchestra to make individual parts more distinct."
-  [{:keys [pitch] :as note}]
-  (let [position (if (even? pitch)
-                   (-> pitch (/ 18) dec)
-                   (-> pitch (/ 18) dec -))]
-    (assoc note :pan position)))
 
 (defn ndereje-balendoro
   "Linda horn music - page 316"
