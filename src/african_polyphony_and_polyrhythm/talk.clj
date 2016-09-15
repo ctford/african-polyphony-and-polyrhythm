@@ -189,9 +189,20 @@
 
 
 ; Keys
-(defn A [midi] (+ midi 69))
-(defn B [midi] (+ midi 71))
-(defn C [midi] (+ midi 72))
+(defn A
+  "Convert a relative midi code into an absolute one in the key of A."
+  [relative-midi]
+  (+ relative-midi 69))
+
+(defn B
+  "Convert a relative midi code into an absolute one in the key of B."
+  [relative-midi]
+  (+ relative-midi 71))
+
+(defn C
+  "Convert a relative midi code into an absolute one in the key of C."
+  [relative-midi]
+  (+ relative-midi 72))
 
 (comment
   (->> (phrase (repeat 1/4) [0 2 4 5 7 9 11 12])
@@ -199,21 +210,29 @@
        live/play))
 
 ; Scales
-(def major (scale [2 2 1 2 2 2 1]))
-(def minor (scale [2 1 2 2 1 2 2]))
-(def pentatonic (scale [2 3 2 2 3]))
+(def major "Happy seven-note scale" (scale [2 2 1 2 2 2 1]))
+(def minor "Sad seven-note scale" (scale [2 1 2 2 1 2 2]))
+(def pentatonic "Five-note scale" (scale [2 3 2 2 3]))
 
 (comment
-  (map (comp A major) (range 0 8))
-  (map (comp A minor) (range 0 8))
-  (map (comp A pentatonic) (range 0 6))
-
   (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp midi->hz A major))
        live/play))
 
 
-; Little-endian scale
+
+
+
+
+
+
+
+
+
+
+
+
+; Little-endian
 (def little-endian-pentatonic
   "In Central African music, we play scales from small sounds to big ones."
   (comp pentatonic -))
@@ -339,7 +358,7 @@
 
 (defmethod live/play-note :horn [{:keys [pitch pan duration]}]
   (whistle :freq pitch :pan (or pan 0) :dur (min duration 0.2))
-  ;(drum :freq pitch :pan (or pan 0) :dur (min duration 0.2))
+  ;(drum :freq (* 1/2 pitch) :pan (or pan 0) :dur (min duration 0.2))
   )
 
 (defmethod live/play-note :default [{:keys [pitch duration]}]
