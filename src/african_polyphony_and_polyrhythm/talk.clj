@@ -189,20 +189,9 @@
 
 
 ; Keys
-(defn A
-  "Convert a relative midi code into an absolute one in the key of A."
-  [relative-midi]
-  (+ relative-midi 69))
-
-(defn B
-  "Convert a relative midi code into an absolute one in the key of B."
-  [relative-midi]
-  (+ relative-midi 71))
-
-(defn C
-  "Convert a relative midi code into an absolute one in the key of C."
-  [relative-midi]
-  (+ relative-midi 72))
+(defn A [relative-midi] (+ relative-midi 69))
+(defn B [relative-midi] (+ relative-midi 71))
+(defn C [relative-midi] (+ relative-midi 72))
 
 (comment
   (->> (phrase (repeat 1/4) [0 2 4 5 7 9 11 12])
@@ -210,9 +199,9 @@
        live/play))
 
 ; Scales
-(def major "Happy seven-note scale" (scale [2 2 1 2 2 2 1]))
-(def minor "Sad seven-note scale" (scale [2 1 2 2 1 2 2]))
-(def pentatonic "Five-note scale" (scale [2 3 2 2 3]))
+(def major (scale [2 2 1 2 2 2 1]))
+(def minor (scale [2 1 2 2 1 2 2]))
+(def pentatonic (scale [2 3 2 2 3]))
 
 (comment
   (->> (phrase (repeat 1/4) (range 0 8))
