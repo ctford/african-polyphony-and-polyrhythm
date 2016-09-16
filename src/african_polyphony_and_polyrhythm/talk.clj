@@ -57,7 +57,7 @@
          vary
          (map #(all :part instrument %)))))
 
-(defn introduce-after
+(defn introduce-successively
   "Gradually introduce each part after t beats."
   [t parts]
   (->> parts
@@ -121,7 +121,7 @@
   (let [drums [child mother father]]
     (->> drums
          (map rand-variations)
-         (introduce-after 4)
+         (introduce-successively 4)
          (tempo (bpm 90)))))
 
 (comment
@@ -302,19 +302,20 @@
 (defn ndereje-balendoro
   "Linda horn music - page 316"
   []
-  (->> [tete ta ha tulule bongo
+  (->> [tete ;ta ha tulule bongo
         ;(big tete) (big ta) (big ha) (big tulule) (big bongo)
         ;(big (big tete)) (big (big ta)) (big (big ha)) (big (big tulule)) (big (big bongo))
         ;(big (big (big tete))) (big (big (big ta))) (big (big (big ha)))
         ]
        (map rand-variations)
-       (introduce-after 4)
+       (introduce-successively 4)
        (map pan)
        (where :pitch (comp midi->hz high A little-endian-pentatonic))
        (tempo (bpm 120))))
 
 (comment
   (live/play (ndereje-balendoro)))
+
 
 
 
