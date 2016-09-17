@@ -226,9 +226,6 @@
 (def descending -)
 
 (comment
-  (map (comp A pentatonic) (range 0 6))
-  (map (comp A descending pentatonic) (range 0 6))
-
   (->> (phrase (repeat 1/4) (range 0 6))
        (where :pitch (comp midi->hz A pentatonic))
        live/play)
@@ -236,6 +233,9 @@
   (->> (phrase (repeat 1/4) (range 0 6))
        (where :pitch (comp midi->hz A descending pentatonic))
        live/play))
+
+
+
 
 
 
