@@ -223,19 +223,19 @@
 
 ; Descending pentatonic
 (def pentatonic (scale [2 3 2 2 3]))
-(def descending -)
 
 (comment
-  (->> (phrase (repeat 1/4) (range 0 6))
+  (->> (phrase (repeat 1/4) (range 0 8))
        (where :pitch (comp midi->hz A pentatonic))
-       live/play)
-
-  (->> (phrase (repeat 1/4) (range 0 6))
-       (where :pitch (comp midi->hz A descending pentatonic))
        live/play))
 
 
+(def descending -)
 
+(comment
+  (->> (phrase (repeat 1/4) (range 0 8))
+       (where :pitch (comp midi->hz A descending pentatonic))
+       live/play))
 
 
 
