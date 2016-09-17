@@ -221,20 +221,20 @@
 
 
 
-; Little-endian pentatonic
+; Descending pentatonic
 (def pentatonic (scale [2 3 2 2 3]))
-(def little-endian -)
+(def descending -)
 
 (comment
   (map (comp A pentatonic) (range 0 6))
-  (map (comp A little-endian pentatonic) (range 0 6))
+  (map (comp A descending pentatonic) (range 0 6))
 
   (->> (phrase (repeat 1/4) (range 0 6))
        (where :pitch (comp midi->hz A pentatonic))
        live/play)
 
   (->> (phrase (repeat 1/4) (range 0 6))
-       (where :pitch (comp midi->hz A little-endian pentatonic))
+       (where :pitch (comp midi->hz A descending pentatonic))
        live/play))
 
 
@@ -299,7 +299,7 @@
        (map rand-variations)
        (introduce-successively 4)
        (map pan)
-       (where :pitch (comp midi->hz high A little-endian pentatonic))
+       (where :pitch (comp midi->hz high A descending pentatonic))
        (tempo (bpm 120))))
 
 (comment
