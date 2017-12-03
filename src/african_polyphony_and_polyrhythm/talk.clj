@@ -21,7 +21,7 @@
       (with before (f note) after))))
 
 (defn split
-  "Split a new note off the note at time t."
+  "Split a note into two at time t."
   [t duration]
   (letfn [(f [note]
             [(-> note (assoc :duration duration))
